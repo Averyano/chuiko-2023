@@ -1,0 +1,65 @@
+main {
+	font-size: 3rem;
+	width: 100%;
+	height: 100vh;
+	position: relative;
+}
+
+.cover {
+	@extend %hidden;
+
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	flex-direction: column;
+	padding: 0 12%;
+	width: 100%;
+	height: 100%;
+	// background-image: url('../shared/images/cover.jpg');
+	background-position: left;
+	background-size: cover;
+	z-index: 0;
+	position: absolute;
+
+	@include media('<phone') {
+		padding: 0 24px;
+	}
+}
+
+.cover__title {
+	@extend %hidden;
+	max-width: 40rem;
+}
+
+.cover__desc li {
+	@extend %hidden;
+}
+
+.cover__desc {
+	display: flex;
+	font-size: 1.35rem;
+	gap: 2rem;
+	margin-top: 1.8rem;
+	margin-left: 3.6rem;
+	max-width: 36rem;
+	line-height: 1.5rem;
+}
+
+.cover__desc--hidden {
+	@extend %hidden;
+}
+
+.cover .btn {
+	@extend %hidden;
+}
+
+.separator {
+	display: block;
+	position: absolute;
+	bottom: 0;
+	z-index: 1000;
+	pointer-events: none;
+	width: 100%;
+	height: 100%;
+	fill: #000;
+}
