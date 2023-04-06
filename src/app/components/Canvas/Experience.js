@@ -65,6 +65,14 @@ export default class Experience extends Component {
 
 	loadTextures() {
 		this.textureLoader = new THREE.TextureLoader();
+		// const images = [
+		// 	'/images/gallery1.jpg',
+		// 	'/images/gallery2.jpg',
+		// 	'/images/gallery3.jpg',
+		// 	'/images/gallery4.jpg',
+		// 	'/images/gallery5.jpg',
+		// ];
+		// this.textures = images.map((img) => this.textureLoader.load(img));
 	}
 
 	createGui() {
@@ -137,7 +145,11 @@ export default class Experience extends Component {
 			this.scene.add(this.roza.model);
 		});
 	}
+
 	createElements() {
+		this.uniforms = {
+			uTime: { value: 0 },
+		};
 		this.geometry = new THREE.PlaneGeometry(1, 1);
 		this.material = new THREE.ShaderMaterial({
 			uniforms: this.uniforms,
@@ -164,7 +176,7 @@ export default class Experience extends Component {
 
 		// this.renderer.setClearColor(0xf1f1f1);
 		this.renderer.setClearColor(0x050505);
-
+		this.renderer.outputEncoding = THREE.sRGBEncoding;
 		this.renderer.setSize(this.sizes.width, this.sizes.height);
 		this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 	}
