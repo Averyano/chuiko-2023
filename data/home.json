@@ -1,0 +1,38 @@
+{
+	"home": {
+		"cover": {
+			"title": "Visionary experiences",
+			"description": "that drive results",
+			"items": ["pug", "sass", "js", "glsl"],
+			"button": {
+				"title": "GitHub",
+				"href": "https://github.com/loudpose/Webpack-Starter-Repo-2023"
+			}
+		},
+		"gallery": {
+			"images": [
+				"/images/gallery5.jpg",
+				"/images/gallery6.jpg",
+				"/images/gallery4.jpg",
+				"/images/gallery3.jpg",
+				"/images/gallery1.jpg",
+				"/images/gallery2.jpg",
+				"/images/gallery7.jpg",
+				"/images/text1.jpg",
+				"/images/text2.jpg"
+			]
+		},
+		"about": {
+			"title": "About this website",
+			"description": [
+				"The website is created to showcase front-end environment for modern JavaScript applications. The idea is that you have all the code organized using OOP approach. All components & modules are organized into folders & sub-folders. App folder for js, styles folder for sass, and views folder for pug files. You also have the shared folder that contains all assets needed for an application, such as images, fonts, 3d models, glsl shaders, site.manifest, robots.txt, etc-etc...",
+
+				"The application is bundled using Webpack, which processes the code and splits it into chunks. On the front-end, libraries such as THREE.js, Lodash, and GSAP are used. To read more about the structure, feel free to click the link below."
+			],
+			"button": {
+				"title": "Read more",
+				"href": "#"
+			}
+		}
+	}
+}

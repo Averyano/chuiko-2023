@@ -1,0 +1,153 @@
+// General
+.awards {
+	@extend %center;
+
+	overflow: hidden;
+	margin-top: 30vh;
+}
+.awards__title {
+	margin-left: 0;
+	margin-bottom: 64px;
+	text-align: center;
+}
+.awards__container {
+	width: 100%;
+
+	display: grid;
+	@include media('>laptop') {
+		grid-template-columns: 1fr 1fr;
+		gap: 32px;
+	}
+	@include media('<laptop') {
+		gap: 180px;
+		padding: 0 20px;
+	}
+}
+
+// Left & Right
+.awards__left {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+}
+#education {
+}
+.awards__right {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+}
+#awards {
+}
+
+// Item
+.awards__item {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+
+	mix-blend-mode: screen;
+
+	max-width: 680px;
+	width: 100%;
+
+	position: relative;
+
+	background: rgb(var(--data-color-black));
+	color: rgb(var(--data-color-white));
+
+	border-radius: 8px;
+
+	padding: 30px 40px;
+	transition: all 0.5s ease-in-out;
+
+	margin-top: 32px;
+
+	&:first-child {
+		margin-top: 0;
+	}
+
+	@include media('<phone') {
+		min-height: 135px;
+	}
+}
+.awards__item:hover {
+	background: rgb(var(--data-color-stone));
+	color: rgb(var(--data-color-black));
+}
+
+.awards__item__text {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+
+	width: 100%;
+	height: fit-content;
+}
+
+.awards__item__text--left {
+	display: flex;
+	flex-direction: column;
+	height: inherit;
+	padding-right: 8px;
+}
+.awards__item__text--right {
+	display: flex;
+	flex-direction: column;
+	height: inherit;
+}
+
+.awards__item__title {
+	@extend %paragraph-24;
+	line-height: 30px;
+	margin-bottom: 0;
+	font-weight: bold;
+
+	@include media('<phone') {
+		font-size: 18px;
+	}
+}
+.awards__item__subtitle {
+	@extend %light-16;
+	margin-bottom: 0;
+	color: inherit;
+}
+.awards__item__year {
+	@extend %paragraph-24;
+	margin-bottom: 0;
+}
+
+// Image
+
+.awards__figure {
+	z-index: 0;
+
+	position: absolute;
+	top: 0;
+	left: 0;
+
+	min-height: 350px;
+	min-width: 600px;
+	max-height: 400px;
+	border-radius: 8px;
+
+	overflow: hidden;
+}
+
+.awards__image--hidden {
+	display: none;
+}
+
+.awards__image {
+	width: 600px;
+	position: relative;
+	top: 0;
+	left: 0;
+	transform: scale(1.5);
+}
+.awards__image--active {
+	display: block;
+}

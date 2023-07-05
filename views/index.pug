@@ -1,0 +1,25 @@
+- const dataGlobal = htmlWebpackPlugin.options.data;
+- const methods = htmlWebpackPlugin.options.methods;
+
+doctype html
+html(lang="en")
+	head
+		include ./head
+
+	body
+
+		// Loader
+		include ./components/preloader
+
+		// Navigation
+		include ./layout/navigation
+
+		// Site Content
+		.main-div
+			block content
+
+
+
+		//- .grain__min
+		// Footer
+		//- include ./layout/footer

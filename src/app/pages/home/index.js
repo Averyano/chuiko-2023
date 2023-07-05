@@ -1,51 +1,137 @@
-import Component from '../../classes/Component';
+import GSAP from 'gsap';
 
-export default class coverHome extends Component {
-	constructor(el) {
+import ImageHoverEffect from '../../components/@avery-image-hover-effect';
+import AboutSection from './AboutSection';
+import CoverSection from './CoverSection';
+
+import Page from '../../classes/Page';
+
+import each from 'lodash/each';
+import SelectionTextSection from './SelectionTextSection';
+export default class HomePage extends Page {
+	constructor(el, callback) {
 		super({
 			element: el,
-			elements: {
-				title: '.cover__title',
-				list: 'li',
-				desc: '.cover__desc--hidden',
-				btn: '.btn',
-			},
+			elements: {},
 		});
-		this.id = 'home';
 
-		this.animate();
+		this.callback = callback;
+		this.id = 'home';
+		this.isCreated = false;
 	}
 
-	animate() {
-		const tl = gsap.timeline({ duration: 1, ease: 'power4.out' });
-		tl.from(this.element, { autoAlpha: 0 })
-			.from(this.elements.title, {
+	create() {
+		if (this.template != this.id) return;
+
+		if (!this.isReady) super.createComponent();
+
+		if (!this.isCreated) {
+			this.components = {
+				cover: new CoverSection(),
+				// selection: new ImageHoverEffect({
+				// 	element: '.selection',
+				// 	elements: {
+				// 		figure: '.selection__figure',
+				// 		content: [
+				// 			{
+				// 				image: '#selection-designs',
+				// 				button: '.selection__button--design',
+				// 			},
+				// 			{
+				// 				image: '#selection-websites',
+				// 				button: '.selection__button--website',
+				// 			},
+				// 		],
+				// 	},
+				// 	activeClass: 'selection__image--active',
+				// }),
+				// about: new AboutSection(),
+				// selectionText: new SelectionTextSection(),
+			};
+			this.isCreated = true;
+		}
+		// Create components
+		each(this.components, (component) => {
+			console.log(component);
+			component.create();
+			// component.addEventListeners();
+		});
+
+		this.addEventListeners();
+
+		console.log(`🔼 ${this.id} is created`);
+	}
+
+	show() {
+		if (this.template != this.id) return;
+
+		this.components.cover.button.revealButton();
+	}
+
+	hide() {
+		return new Promise((resolve) => {
+			this.destroy();
+
+			GSAP.to(this.element, {
 				autoAlpha: 0,
-				y: 100,
-				rotate: 2,
-			})
-			.from(this.elements.list, {
-				autoAlpha: 0,
-				y: 40,
-				stagger: 0.2,
-				duration: 0.7,
-				rotate: 10,
-			})
-			.from(
-				this.elements.desc,
-				{
-					autoAlpha: 0,
-					y: 40,
-					duration: 0.7,
-				},
-				'-=0.5'
-			)
-			.from(
-				this.elements.btn,
-				{
-					autoAlpha: 0,
-				},
-				'-=0.5'
-			);
+				onComplete: resolve,
+			});
+		});
+	}
+
+	enterTheMainPage(e) {
+		// e.preventDefault();
+		const eventObject = e;
+		eventObject.target.href = '/main';
+		if (e.key === 'Enter') {
+			this.callback(eventObject);
+		}
+	}
+
+	addEventListeners() {
+		console.log('Add');
+		window.addEventListener('keyup', this.enterTheMainPage.bind(this));
+
+		each(this.components, (component) => {
+			component.addEventListeners();
+		});
+	}
+
+	removeEventListeners() {
+		window.removeEventListener('keyup', this.enterTheMainPage.bind(this));
+
+		each(this.components, (component) => {
+			component.removeEventListeners();
+		});
+	}
+
+	destroy() {
+		super.destroy();
+		this.removeEventListeners();
+
+		each(this.components, (component) => {
+			component.destroy();
+		});
+
+		// Removes scroll trigger instances
+		const scrolltriggerElements = document.querySelectorAll('.pin-spacer');
+		each(scrolltriggerElements, (pinSpacer) => {
+			const parent = pinSpacer.parentElement;
+
+			while (pinSpacer.firstChild) {
+				parent.appendChild(pinSpacer.firstChild);
+			}
+
+			parent.removeChild(pinSpacer);
+		});
+	}
+
+	update() {
+		if (
+			this.components &&
+			this.components.selection &&
+			this.components.selection.isReady
+		)
+			this.components.selection.update();
 	}
 }

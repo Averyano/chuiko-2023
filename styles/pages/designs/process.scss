@@ -1,0 +1,260 @@
+.process {
+	position: relative;
+	z-index: z('content-front');
+}
+.process__arrow {
+	@extend %center;
+
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%) scale(0);
+	height: 50%;
+	cursor: pointer;
+
+	z-index: 2;
+
+	transition: all 0.5s ease;
+	transition-delay: 0.1s;
+
+	@include media('<phone') {
+		display: none;
+	}
+}
+.process__arrow svg {
+	opacity: 0.15;
+	mix-blend-mode: difference;
+}
+.process__arrow:hover > svg {
+	opacity: 0.3;
+	// mix-blend-mode: normal;
+}
+.process__arrow.active {
+	transform: translateY(-50%) scale(1);
+}
+.process__arrow:hover {
+}
+.process__arrow:hover > svg path {
+	fill: #111;
+}
+.process__right__arrow {
+	right: 0;
+	padding-left: 12px;
+	padding-right: 24px;
+}
+.process__left__arrow {
+	left: 0;
+	padding-right: 12px;
+	padding-left: 24px;
+}
+
+.process__wrapper {
+	@extend %center;
+	flex-direction: column;
+	width: 100%;
+	min-height: inherit;
+	max-height: 200vh;
+}
+.process__swiper {
+	// max-width: 1500px;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 16/9;
+	margin-bottom: 64px;
+}
+// General
+
+.process__description {
+	max-width: 700px;
+	text-align: justify;
+
+	@include media('<phone') {
+		text-align: justify;
+		margin-bottom: 24px;
+	}
+}
+// Items Container
+.process__steps {
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	justify-content: center;
+	align-items: flex-start;
+	gap: 40px;
+
+	@include media('<phone') {
+		gap: 12px;
+	}
+}
+// Ind Item
+.process__item {
+	@extend %center;
+	flex-direction: column;
+	width: 100%;
+}
+
+.process__item__title {
+	@extend %light-16;
+	font-style: italic;
+	width: 100%;
+
+	@include media('<phone') {
+		margin-bottom: 0px;
+	}
+}
+.process__two .process__item__title {
+	text-align: left;
+	align-self: flex-start;
+	margin-left: 24px;
+	max-width: 110px;
+
+	@include media('<laptop') {
+		display: none;
+	}
+}
+.process__three .process__item__title {
+	margin-top: 22.5px;
+	text-align: right;
+	align-self: flex-end;
+	margin-right: 24px;
+	max-width: 130px;
+
+	@include media('<laptop') {
+		margin-top: 21.5px;
+	}
+}
+.process__item__border--main {
+	width: 100%;
+	background: #d9d9d9;
+	height: 1px;
+
+	@include media('<phone') {
+		display: none;
+	}
+}
+.process__item__border--top {
+	height: 64px;
+	width: 1px;
+	background: #d9d9d9;
+	margin: auto;
+
+	@include media('<phone') {
+		display: none;
+	}
+}
+
+.process__item__border--bottom {
+	height: 1px;
+	width: 60%;
+	background: #d9d9d9;
+	margin: auto;
+	margin-top: 24px;
+	margin-bottom: 96px;
+
+	@include media('<phone') {
+		display: none;
+	}
+}
+
+.process__item__figure {
+	width: 100%;
+	height: auto;
+	background: #d9d9d9;
+	margin-top: 24px;
+
+	position: relative;
+	border-radius: 4px;
+	aspect-ratio: 16 / 9;
+}
+
+.process__item__icon.active {
+	background: rgba(var(--data-color-black), 0.67);
+	transform: scale(1);
+}
+.process__item__icon.active .process__item__icon--svg {
+	transform: scale(1);
+	opacity: 0.8;
+}
+.process__item__icon.active:hover {
+	transform: scale(1.2);
+}
+.process__item__icon.active:hover > .process__item__icon--svg {
+	transform: scale(1.1);
+	opacity: 1;
+}
+
+.process__item__icon {
+	@extend %icon;
+	background: rgba(var(--data-color-black), 0);
+
+	position: absolute;
+	bottom: 0;
+	right: 0;
+
+	margin-bottom: 36px;
+	margin-right: 36px;
+	z-index: 3;
+	transition: all 0.5s ease;
+	transform: scale(0);
+
+	&--cross {
+		top: 0;
+		margin-bottom: 0;
+		margin-top: 36px;
+	}
+
+	@include media('<laptop') {
+		margin-bottom: 24px;
+		margin-right: 24px;
+
+		&--cross {
+			margin-top: 24px;
+			margin-bottom: 0px;
+		}
+	}
+	@include media('<phone') {
+		margin-bottom: 0;
+		margin-right: 0;
+		border-radius: 8px 0 4px 0;
+
+		&--cross {
+			margin-top: 0;
+			border-radius: 0 8px 0 4px;
+		}
+	}
+}
+
+.process__item__icon--svg {
+	transform: scale(0);
+	opacity: 0;
+	transition: all 0.5s ease;
+}
+.process__item__image {
+	height: auto;
+	max-width: 1920px;
+	object-fit: cover;
+	object-position: center;
+	z-index: 0;
+	border-radius: inherit;
+	width: 100%;
+}
+
+// Clone
+.swiper--clone {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 99;
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	// background: rgba(var(--data-color-black), 0.2);
+	backdrop-filter: blur(4px);
+}
+.swiper--clone .swiper-wrapper .process__item__figure {
+	@extend %center;
+	margin-top: 0;
+	background: transparent;
+	// padding: 20px;
+}

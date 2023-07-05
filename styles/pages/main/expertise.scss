@@ -1,0 +1,290 @@
+// General
+.expertise {
+	display: flex;
+	flex-direction: column;
+
+	min-height: auto;
+	background: rgb(var(--data-color-background));
+	margin-top: 30vh;
+	padding-bottom: 0;
+
+	@include media('<tablet') {
+		margin-top: 20vh;
+	}
+}
+
+.expertise .section__wrapper {
+	margin-bottom: 0;
+	margin-top: 10vh;
+	max-width: 1920px;
+
+	@include media('<phone') {
+		padding: 0 0px;
+	}
+}
+
+.expertise__title {
+	margin-left: 55px;
+	margin-bottom: 80px;
+
+	@include media('<phone') {
+		margin: 0;
+		margin-bottom: 50px;
+		width: 100%;
+		text-align: center;
+		padding: 0 24px;
+	}
+}
+
+.expertise__wrapper {
+	display: grid;
+	align-items: stretch;
+	gap: 72px;
+
+	@include media('>tablet') {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	@include media('<tablet') {
+		grid-template-rows: 1fr auto;
+		gap: 0px;
+	}
+
+	@include media('<phone') {
+		padding: 0 24px;
+	}
+}
+
+// Left
+.expertise__left,
+.expertise__right {
+	flex: 1;
+}
+.expertise__left {
+	display: flex;
+	flex-direction: column;
+
+	@include media('>tablet') {
+		min-height: 300px;
+	}
+}
+
+.expertise__left__top {
+	display: grid;
+
+	@include media('>phone') {
+		grid-template-columns: 1fr 1fr;
+		min-height: 300px;
+		gap: 40px;
+		padding: 0 31px;
+	}
+	@include media('<phone') {
+		padding: 0 0;
+		gap: 40px;
+
+		grid-template-rows: 150px 1fr;
+	}
+}
+
+.expertise__task {
+	display: flex;
+
+	&:first-child {
+		margin-bottom: 40px;
+
+		@include media('<phone') {
+			margin-bottom: 8px;
+		}
+	}
+}
+.expertise__task--duration p {
+	@include media('<phone') {
+		margin-bottom: 0px;
+	}
+}
+.expertise__task svg {
+	margin-right: 18px;
+	min-width: 24px;
+
+	@include media('<phone') {
+		min-width: 16px;
+	}
+}
+
+.expertise__left__top__paragraph,
+.expertise__task p {
+	@extend %paragraph-16;
+}
+
+.expertise__left__top__paragraph {
+	text-align: justify;
+	height: fit-content;
+
+	@include media('<phone') {
+		margin-bottom: 0;
+	}
+}
+
+// Right
+#exp-img-right {
+	@include media('<phone') {
+		display: none;
+	}
+}
+
+.expertise__right {
+	display: flex;
+	flex-direction: column;
+
+	@include media('>tablet') {
+		justify-content: space-between;
+	}
+	@include media('<tablet') {
+		margin-top: 40px;
+		justify-content: flex-end;
+	}
+}
+.expertise__right__top {
+	padding: 0 31px;
+
+	@include media('<phone') {
+		padding: 0 0;
+		margin-bottom: 60px;
+	}
+}
+.expertise__right__list {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+.expertise__right__list__item {
+	// @extend %link--hidden;
+
+	font-size: 24px;
+	font-weight: 500;
+
+	margin-bottom: 10px;
+	color: #dddad4;
+	transition: color 0.3s ease-in-out;
+
+	cursor: pointer;
+
+	@include media('<phone') {
+		font-size: 20px;
+		margin-bottom: 8px;
+	}
+}
+
+.expertise__right__list__item:hover {
+	color: #bbb5aa;
+}
+
+.expertise__right__list__item.active {
+	pointer-events: none;
+	color: #9a9894;
+}
+
+.expertise__right__list__item span:first-child {
+	min-width: 20px;
+	display: inline-block;
+	min-width: 20px;
+	margin-right: 10px;
+	font-size: 16px;
+}
+
+.expertise__right__list__item.active span:last-child {
+	margin-top: 4px;
+	height: 32px;
+}
+.expertise__right__list__item span:last-child {
+	@extend %link--hidden;
+	margin-top: 4px;
+	height: 32px;
+}
+// Image
+.expertise__bottom {
+	margin-top: 72px; // same as gap: 72px;
+
+	@include media('<phone') {
+		margin-top: 0px;
+	}
+}
+
+.expertise__item__figure {
+	border-radius: 8px 8px 0 0;
+	height: 100%;
+	max-height: 600px;
+
+	@include media('<laptop') {
+		max-height: 450px;
+	}
+
+	@include media('<phone') {
+		border-radius: 0;
+	}
+}
+.expertise__item__image {
+	border-radius: inherit;
+	height: 100%;
+	// height: 100%;
+	width: 100%;
+}
+.expertise__figure {
+	border-radius: 8px 8px 0 0;
+	height: 100%;
+	max-height: 421px;
+
+	@include media('<tablet') {
+		border-radius: 8px;
+	}
+}
+
+.expertise__image {
+	border-radius: inherit;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.expertise__items__wrapper {
+	display: grid;
+
+	margin-top: 32px;
+
+	@include media('<laptop') {
+		margin-top: 64px;
+	}
+
+	@include media('>phone') {
+		grid-template-columns: 1fr 1fr;
+		gap: 72px;
+	}
+
+	@include media('<tablet') {
+		gap: 8px;
+	}
+
+	@include media('<phone') {
+		grid-template-rows: 1fr 1fr;
+	}
+}
+
+.expertise__items {
+	position: relative;
+	top: 0;
+	left: 0;
+}
+
+.expertise__item__figure {
+	position: absolute;
+	top: 0;
+	left: 0;
+
+	&:first-child {
+		position: relative;
+	}
+}
+
+.expertise__item__figure.active {
+	z-index: 1;
+}

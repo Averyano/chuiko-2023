@@ -1,0 +1,64 @@
+.welcome {
+	@extend %center;
+	background: rgb(var(--data-color-background));
+
+	@include media('<tablet') {
+		padding: 4rem 0;
+	}
+
+	@include media('<phone') {
+		padding: 4rem 0;
+		padding-top: 8rem;
+	}
+}
+.welcome__title {
+	margin-top: 10%;
+	margin-bottom: 50px;
+
+	@include media('<tablet') {
+		margin-left: 0;
+		text-align: center;
+	}
+}
+.welcome__text__wrapper {
+	@include media('<phone') {
+		padding: 0 24px;
+	}
+}
+.welcome__video {
+	width: 100%;
+	object-fit: cover;
+	object-position: bottom;
+	max-height: 757px;
+	border-radius: 20px;
+	margin-bottom: 100px;
+
+	transform: perspective(800px) rotateX(0deg); // set it to -2 deg on scroll
+
+	@include media('<tablet') {
+		border-radius: 0;
+	}
+}
+
+.welcome__text__block {
+	display: grid;
+
+	@include media('>tablet') {
+		grid-template-columns: repeat(3, 1fr);
+		gap: 100px;
+	}
+
+	@include media('<tablet') {
+		grid-template-rows: repeat(3, 1fr);
+		gap: 18px;
+	}
+}
+
+.welcome__text__element {
+	@extend %paragraph-16;
+	text-align: justify;
+
+	@include media('<tablet') {
+		max-width: 525px;
+	}
+}

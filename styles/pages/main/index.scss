@@ -1,0 +1,11 @@
+@import './welcome';
+@import './expertise';
+@import './awards';
+@import './contact';
+@import './contactForm';
+@import './siteby';
+
+.content.main {
+	background: rgb(var(--data-color-background));
+	overflow-x: hidden;
+}

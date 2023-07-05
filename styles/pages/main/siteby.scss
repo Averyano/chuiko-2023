@@ -1,0 +1,21 @@
+.siteby {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	margin-right: 18px;
+	margin-bottom: 8px;
+
+	& span {
+		@extend %light-12;
+		display: inline-block;
+		height: 20px;
+		color: #706f6d;
+	}
+	& a {
+		// @extend %light-12;
+		@extend %link--hidden;
+		height: 20px;
+
+		color: #111;
+	}
+}
