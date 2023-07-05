@@ -1,7 +1,7 @@
 {
-	"name": "Averyano Template",
+	"name": "Chuiko 2023",
 	"version": "0.0.3",
-	"description": "averyano-template",
+	"description": "chuiko-2023",
 	"main": "app.js",
 	"scripts": {
 		"build": "webpack --progress --mode production && node sitemapGenerate.js",
