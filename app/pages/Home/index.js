@@ -1,5 +1,6 @@
 import GSAP from 'gsap';
 import CoverSection from './CoverSection';
+import Gallery from '../../components/Gallery';
 
 import Page from '../../classes/Page';
 
@@ -25,6 +26,7 @@ export default class HomePage extends Page {
 		if (!this.isCreated) {
 			this.components = {
 				cover: new CoverSection(),
+				gallery: new Gallery(),
 			};
 			this.isCreated = true;
 		}
@@ -104,12 +106,18 @@ export default class HomePage extends Page {
 		}
 	}
 
+	onResize() {
+		each(this.components, (component) => {
+			if (component.onResize) component.onResize();
+		});
+	}
+
 	update() {
-		// if (
-		// 	this.components &&
-		// 	this.components.selection &&
-		// 	this.components.selection.isReady
-		// )
-		// 	this.components.selection.update();
+		if (
+			this.components &&
+			this.components.gallery &&
+			this.components.gallery.items.length > 0
+		)
+			this.components.gallery.update();
 	}
 }

@@ -1,1 +1,6 @@
-in process
+```
+npm install
+npm start
+```
+
+by Averyano

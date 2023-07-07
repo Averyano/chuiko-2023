@@ -7,26 +7,29 @@
 	width: 100%;
 	height: 100vh;
 	background: rgb(var(--data-color-background));
-	z-index: z('preloader');
+	z-index: z('content-back');
 	user-select: none;
 }
+
 .preloader__loadingbar {
-	height: 4px;
-	width: 430px;
-	margin-top: 22px;
-	border-radius: 2px;
-	background: #fff;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+
+	background: #16162c;
 	mix-blend-mode: difference;
 	z-index: z('content');
 	transform-origin: left;
 	transform: scaleX(0);
 }
-.preloader__logo__text {
-	@extend %black-256;
 
+.preloader__logo__svg__container {
+	position: relative;
+	top: 0;
+	left: 0;
 	overflow: hidden;
-	font-size: 48px;
-	color: #fff;
 	mix-blend-mode: difference;
 
 	z-index: z('content');
@@ -38,6 +41,23 @@
 	& span.spacing {
 		margin-left: 20px;
 	}
+
+	@include media('<laptop') {
+		& * {
+			width: 300px;
+		}
+	}
+}
+.preloader__svg--stroke {
+	stroke-dasharray: 1000;
+	stroke-dashoffset: 0;
+}
+.preloader__svg--filled {
+	position: absolute;
+	top: 0;
+	left: 0;
+
+	clip-path: polygon(0 0, 0 100%, 0 100%, 0 0);
 }
 
 .preloader__bg {

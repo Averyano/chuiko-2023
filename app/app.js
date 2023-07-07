@@ -15,7 +15,7 @@ import { debounce } from './utils/utils';
 
 import NotFound from './pages/NotFound';
 // import Footer from './components/Footer';
-// import normalizeWheel from 'normalize-wheel';
+import normalizeWheel from 'normalize-wheel';
 
 class App {
 	constructor() {
@@ -107,7 +107,7 @@ class App {
 
 	createNavigation() {
 		this.navigation = new Navigation();
-		this.navigation.show();
+		// this.navigation.show();
 	}
 
 	createContent() {
@@ -135,10 +135,10 @@ class App {
 			this.navigation.closeMenu();
 		});
 
-		NodeEmitter.on('showMenu', () => {
-			this.navigation.show();
-		});
-		NodeEmitter.on('hideMenu', () => this.navigation.hide());
+		// NodeEmitter.on('showMenu', () => {
+		// 	this.navigation.show();
+		// });
+		// NodeEmitter.on('hideMenu', () => this.navigation.hide());
 
 		// NodeEmitter.on('stopScroll', () => this.scroll.stop());
 		// NodeEmitter.on('startScroll', () => this.scroll.start());
@@ -148,25 +148,21 @@ class App {
 		console.log('%c Preloaded');
 		if (this.loader.template === 'home') {
 			document.body.classList.add('refresh');
-
-			this.navigation.element.classList.add('nav--cover');
+			// this.home.components.gallery.create(this.preloader.elements.thumbItems);
+			this.home.components.gallery.create(
+				this.loader.preloader.elements.thumbItems
+			);
 
 			// this.experience.updateImages(() => {
 			// 	// After images are updated, and webGL scene is ready, animate the line to 1, and show content
 			// 	// this.loader.preloader.animateLine(1);
 			// });
 			this.loader.preloader.hide();
-			this.navigation.updateNav(this.loader.template);
+
 			this.show();
 		} else {
 			document.body.classList.remove('refresh');
-
-			this.navigation.element.classList.remove('nav--cover');
-
-			// this.loader.preloader.animateLine(1);
 			this.loader.preloader.hide();
-
-			this.navigation.updateNav(this.loader.template);
 
 			this.show();
 		}
@@ -222,28 +218,37 @@ class App {
 	}
 
 	onTouchDown(event) {
-		if (this.experience && this.experience.onTouchDown) {
-			this.experience.onTouchDown(event);
+		if (
+			this.home.components.gallery &&
+			this.home.components.gallery.onTouchDown
+		) {
+			this.home.components.gallery.onTouchDown(event);
 		}
 	}
 
 	onTouchMove(event) {
-		if (this.experience && this.experience.onTouchMove) {
-			this.experience.onTouchMove(event);
+		if (
+			this.home.components.gallery &&
+			this.home.components.gallery.onTouchMove
+		) {
+			this.home.components.gallery.onTouchMove(event);
 		}
 	}
 
 	onTouchUp(event) {
-		if (this.experience && this.experience.onTouchUp) {
-			this.experience.onTouchUp(event);
+		if (
+			this.home.components.gallery &&
+			this.home.components.gallery.onTouchUp
+		) {
+			this.home.components.gallery.onTouchUp(event);
 		}
 	}
 
 	onWheel(event) {
 		const normalizedWheel = normalizeWheel(event);
 
-		if (this.experience && this.experience.onWheel) {
-			this.experience.onWheel(normalizedWheel);
+		if (this.home.components.gallery && this.home.components.gallery.onWheel) {
+			this.home.components.gallery.onWheel(normalizedWheel);
 		}
 	}
 

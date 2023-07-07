@@ -1,6 +1,13 @@
 @import './cover';
-@import './selection';
-@import './about';
+@import './main';
+@import './thumb';
+
+main {
+	font-size: 3rem;
+	width: 100%;
+	height: auto;
+	position: relative;
+}
 
 .home {
 	height: 100vh;

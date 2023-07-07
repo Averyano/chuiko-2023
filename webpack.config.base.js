@@ -18,6 +18,7 @@ const dirShared = path.join(__dirname, 'shared');
 const dirImages = path.join(__dirname, 'shared', 'images');
 const dirIcons = path.join(__dirname, 'shared', 'images', 'icons');
 const dirPDF = path.join(__dirname, 'shared', 'pdf');
+const dirFonts = path.join(__dirname, 'shared', 'fonts');
 const dirOther = path.join(__dirname, 'shared', 'other');
 const dirModels = path.join(__dirname, 'shared', 'models');
 const dirStyles = path.join(__dirname, 'styles');
@@ -44,6 +45,7 @@ const baseConfig = (isProduction) => {
 				{ from: dirIcons, to: './icons' },
 				{ from: dirModels, to: './models' },
 				{ from: dirPDF, to: './pdf' },
+				{ from: dirFonts, to: './fonts' },
 				{ from: dirOther, to: './' },
 			],
 		}),

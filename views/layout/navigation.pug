@@ -1,25 +1,39 @@
 nav 
 	.nav__wrapper 
-		.nav__left
-			include ./logo-svg.pug
-			//- img.nav__logo__img(data-pre="/images/averyano-logo-111.svg" width="96px" height="96px")
+		.nav__top
+			.nav__item 
+				h1.nav__item__title Victoria Chuiko
+				p.nav__item__subtitle is a cinematographer, photographer from Kyiv, Ukraine.
+			.nav__item 
+				h1.nav__item__title Location
+				p.nav__item__subtitle 
+					|moved to Berlin in 2022
+					br
+					| when Russia invaded Ukraine.
+			.nav__item 
+			.nav__item 
+				h1.nav__item__title Contact Info
+				p.nav__item__subtitle
+					span 
+						a(href="mailto:hello@vi-k.com") hello@vi-k.com
+					span
+						a(href="tel:+4915753557202") +49 15753557202
 
-		.nav__right 
-			.nav__email__item 
-				.nav__email__title contact us
-				a.nav__email__link(href="mailto:hello@utkina-design.com") hello@utkina-design.com
-			.nav__menu
-				.nav__menu__line
-				.nav__menu__line
-				.nav__menu__line
-	.nav__content
-		.nav__content__wrapper
-			.nav__content__container 
-				a.nav__content__link(href="/" data-page-link) 
-					span.nav__content__link--inner Works
-				a.nav__content__link(href="/main" data-page-link data-element-link="#welcome-section") 
-					span.nav__content__link--inner Design
-				a.nav__content__link(href="/main" data-page-link data-element-link=".awards")
-					span.nav__content__link--inner Education
-				a.nav__content__link(href="/main" data-page-link data-element-link=".contact")
-					span.nav__content__link--inner Contact
+		.nav__menu
+			.nav__menu__line
+			.nav__menu__line
+			.nav__menu__line
+	//- 	.nav__left
+	//- 		include ./logo-svg.pug
+	//- 		//- img.nav__logo__img(data-pre="/images/averyano-logo-111.svg" width="96px" height="96px")
+	//- .nav__content
+	//- 	.nav__content__wrapper
+	//- 		.nav__content__container 
+	//- 			a.nav__content__link(href="/" data-page-link) 
+	//- 				span.nav__content__link--inner Works
+	//- 			a.nav__content__link(href="/main" data-page-link data-element-link="#welcome-section") 
+	//- 				span.nav__content__link--inner Design
+	//- 			a.nav__content__link(href="/main" data-page-link data-element-link=".awards")
+	//- 				span.nav__content__link--inner Education
+	//- 			a.nav__content__link(href="/main" data-page-link data-element-link=".contact")
+	//- 				span.nav__content__link--inner Contact

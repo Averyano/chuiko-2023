@@ -21,7 +21,7 @@ module.exports = {
 		historyApiFallback: webpackPageRoutes,
 	},
 	optimization: {
-		minimize: true,
+		minimize: false,
 		minimizer: [new ImageminWebpWebpackPlugin()],
 	},
 };

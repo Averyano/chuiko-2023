@@ -47,7 +47,7 @@ html {
 
 body {
 	overscroll-behavior-x: none;
-	background: #f6f4f2;
+	background: #111111;
 	position: relative;
 	width: 100%;
 
@@ -68,14 +68,21 @@ button {
 	outline: none;
 }
 
-h1 {
-	font-weight: 900;
-	font-size: 6rem;
+h1,
+h2 {
+	font-family: 'Thunder';
+	font-weight: bold;
+	font-size: 50px;
+	line-height: 36px;
+	color: white;
+	text-transform: uppercase;
 }
-
 p {
+	font-family: 'Kharkiv Tone';
 	font-weight: 400;
-	font-size: 1.35rem;
+	font-size: 12px;
+	color: white;
+	line-height: 16px;
 }
 
 img {
@@ -87,6 +94,10 @@ img {
 
 	max-width: 100%;
 	height: auto;
+}
+
+.main-div {
+	user-select: none;
 }
 
 .content {

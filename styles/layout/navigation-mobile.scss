@@ -1,0 +1,22 @@
+.menu__content {
+	width: 100%;
+	display: grid;
+	grid-template-rows: repeat(3, 1fr);
+	grid-gap: 100px;
+	gap: 100px;
+	height: 100%;
+	max-width: 1400px;
+	margin: auto;
+	padding: 20vh 0;
+	align-items: center;
+	justify-items: start;
+	justify-content: center;
+
+	& .nav__item {
+		opacity: 0;
+	}
+
+	@include media('>tablet') {
+		display: none;
+	}
+}

@@ -5,9 +5,8 @@ import NodeEmitter from '../classes/NodeEmitter';
 export default class Hamburger extends Component {
 	constructor() {
 		super({
-			element: 'nav',
+			element: '.nav__menu__container',
 			elements: {
-				menu: '.nav__menu',
 				menuLines: '.nav__menu__line',
 			},
 		});
@@ -32,12 +31,10 @@ export default class Hamburger extends Component {
 
 		this.isAnimating = true;
 		this.isOpen = !this.isOpen;
-
+		console.log(this.isOpen);
 		if (this.isOpen) {
-			NodeEmitter.emit('stopScroll');
 			NodeEmitter.emit('openMenu');
 		} else if (!this.isOpen) {
-			NodeEmitter.emit('startScroll');
 			NodeEmitter.emit('closeMenu');
 		}
 
@@ -53,14 +50,12 @@ export default class Hamburger extends Component {
 			{
 				top: '15px',
 				rotate: 0,
-				backgroundColor: '#ffffff',
 			},
 			{
 				rotate: 45,
 				top: '50%',
 				duration: 0.5,
 				ease: 'out.power4',
-				backgroundColor: '#111111',
 			},
 			0
 		);
@@ -69,12 +64,10 @@ export default class Hamburger extends Component {
 			this.elements.menuLines[1],
 			{
 				opacity: 1,
-				backgroundColor: '#ffffff',
 			},
 			{
 				opacity: 0,
 				duration: 0.29,
-				backgroundColor: '#111111',
 				ease: 'out.power4',
 			},
 			0
@@ -85,14 +78,12 @@ export default class Hamburger extends Component {
 			{
 				top: '31px',
 				rotate: 0,
-				backgroundColor: '#ffffff',
 			},
 			{
 				rotate: -45,
 				top: '50%',
 				duration: 0.5,
 				ease: 'out.power4',
-				backgroundColor: '#111111',
 			},
 			0
 		);
@@ -105,6 +96,6 @@ export default class Hamburger extends Component {
 	animateHamburger = () => (this.isOpen ? this.tl.play() : this.tl.reverse());
 
 	addEventListeners() {
-		this.elements.menu.addEventListener('click', this.toggleState.bind(this));
+		this.element.addEventListener('click', this.toggleState.bind(this));
 	}
 }

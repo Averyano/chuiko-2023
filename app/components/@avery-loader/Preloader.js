@@ -3,17 +3,21 @@ import GSAP from 'gsap';
 import map from 'lodash/map';
 import GlobalHandler from '../../classes/GlobalHandler';
 import { checkWebpSupport } from './utils.js';
-
+import NodeEmitter from '../../classes/NodeEmitter';
 export default class Preloader extends Component {
 	constructor() {
 		super({
-			element: document.querySelector('.preloader'),
+			element: '.preloader',
 			elements: {
-				text: '.preloader__logo__text',
 				loadingbar: '.preloader__loadingbar',
 				images: document.querySelectorAll('[data-pre]'),
 				main: document.querySelector('.preloader__bg--main'),
 				overlay: document.querySelector('.preloader__bg--overlay'),
+				container: '.preloader__logo__svg__container',
+				stroke: '.preloader__svg--stroke',
+				fill: '.preloader__svg--filled',
+				thumbWrapper: document.querySelector('.thumb__wrapper'),
+				thumbItems: document.querySelectorAll('.thumb__item'),
 			},
 		});
 
@@ -32,7 +36,8 @@ export default class Preloader extends Component {
 	 */
 	// called from Loader
 	async createLoader(template) {
-		if (!this.isWebpSupport) this.isWebpSupported = await checkWebpSupport();
+		// if (!this.isWebpSupport) this.isWebpSupported = await checkWebpSupport();
+		if (!this.isWebpSupport) this.isWebpSupported = false;
 		console.log(this.isWebpSupported);
 		this.introAnimation();
 
@@ -46,7 +51,7 @@ export default class Preloader extends Component {
 			});
 
 		if (this.elements.images.length === 0) {
-			setTimeout(this.onLoaded.bind(this), 100);
+			// setTimeout(this.onLoaded.bind(this), 100);
 			console.log('No Images to load');
 		}
 	}
@@ -56,7 +61,7 @@ export default class Preloader extends Component {
 	 */
 	animateElement(el, i) {
 		GSAP.from(el, {
-			yPercent: 100,
+			xPercent: -100,
 			duration: 0.7,
 			delay: i,
 			ease: 'out.expo',
@@ -73,13 +78,15 @@ export default class Preloader extends Component {
 	}
 
 	animateLine(number) {
-		GSAP.to(this.elements.loadingbar, {
-			scaleX: number,
+		const numberPercent = number * 100;
+		GSAP.to(this.elements.fill, {
+			clipPath: `polygon(0% 0%, ${numberPercent}% 0%, ${numberPercent}% 100%, 0% 100%)`,
+			ease: 'out.expo',
+			duration: 1.5,
 		});
 	}
 
 	introAnimation() {
-		let delayTime = 0;
 		this.animateLine(0);
 		this.isIntroComplete = 0;
 
@@ -91,29 +98,42 @@ export default class Preloader extends Component {
 			if (this.elements.images.length === 0) {
 				this.isIntroComplete = 2;
 			}
-			this.animateElement(el, i + 0.7);
-			delayTime += i + 0.7;
+			// this.animateElement(el, i / 1.75);
 		});
 	}
 
 	revealText() {
 		GSAP.fromTo(
-			this.elements.text.children,
+			this.elements.container,
 			{
-				y: 200,
-				rotate: 10,
+				opacity: 0,
 			},
 			{
-				y: 0,
-				rotate: 0,
-				stagger: 0.1,
+				opacity: 1,
 				duration: 0.7,
 				ease: 'out.expo',
-				onComplete: () => (this.firstReveal = false),
 			}
 		);
 
-		GSAP.set(this.elements.text, { opacity: 1 }, 0);
+		setTimeout(() => {
+			NodeEmitter.emit('showMenu');
+		}, 2000);
+
+		GSAP.fromTo(
+			this.elements.stroke,
+			{
+				strokeDashoffset: 1000,
+			},
+			{
+				strokeDashoffset: 0,
+				opacity: 1,
+				duration: 3,
+				ease: 'out.expo',
+			},
+			0
+		);
+
+		// GSAP.set(this.elements.container, { opacity: 1 }, 0);
 	}
 
 	// The end animation
@@ -124,29 +144,33 @@ export default class Preloader extends Component {
 
 		this.timeline
 			.fromTo(
-				this.elements.loadingbar,
-				{ opacity: 1 },
-				{ opacity: 0, duration: 0.25, delay: 0.25, ease: 'out.expo' }
-			)
-			.fromTo(
-				this.elements.text,
-				{ opacity: 1 },
-				{ opacity: 0, duration: 0.25, ease: 'out.expo' }
+				this.elements.thumbWrapper,
+				{ yPercent: 100, opacity: 0 },
+				{ yPercent: 0, opacity: 1, duration: 0.25, ease: 'out.expo' }
 			)
 			.fromTo(
 				this.element,
-				{ yPercent: 0 },
 				{
-					yPercent: -100,
-					duration: 1.2,
-					ease: 'out.expo',
+					opacity: 1,
+				},
+				{
+					opacity: 0,
+					duration: 0.5,
+					ease: 'power4.out',
+				}
+			)
+			.fromTo(
+				this.elements.thumbItems,
+				{ yPercent: 100, opacity: 0 },
+				{
+					yPercent: 0,
+					opacity: 1,
+					duration: 1.5,
+					stagger: 0.05,
+					ease: 'power4.out',
 					onComplete: () => {
-						GSAP.set(this.elements.text, { opacity: 0 }, 0);
-
-						setTimeout(() => {
-							this.elements.loadingbar.dataset.loaded = 0;
-							this.animateLine(0);
-						}, 1000);
+						NodeEmitter.emit('showMenu');
+						this.destroy();
 					},
 				}
 			);
@@ -205,12 +229,13 @@ export default class Preloader extends Component {
 
 		this.elements.loadingbar.dataset.loaded = percent;
 
-		this.animateLine(Math.min(percent, 0.5));
+		this.animateLine(percent);
 
 		if (percent === 1) {
 			this.isLoaded = true;
 
 			setTimeout(this.onLoaded.bind(this), 1000);
+
 			// if (this.isIntroComplete === 2) {
 			// }
 		}
@@ -241,19 +266,17 @@ export default class Preloader extends Component {
 	}
 
 	hide() {
-		this.animateLine(1);
+		// this.animateLine(1);
 		this.timeline.play();
 		console.log('hide');
 		// .then(this.destroy.bind(this));
 	}
 
 	destroy() {
-		// this.element.parentNode.removeChild(this.element);
+		this.timeline.kill();
+
+		this.element.parentNode.removeChild(this.element);
 	}
 
-	onResize() {
-		this.elements.loadingbar.style.width = `${
-			this.elements.text.getBoundingClientRect().width
-		}px`;
-	}
+	onResize() {}
 }
