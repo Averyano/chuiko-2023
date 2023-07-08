@@ -1,50 +1,15 @@
 - var data = dataGlobal.home.gallery;
 - var webpSrc = methods.webpSrc;
 
-mixin image(src)
+mixin image(src, alt)
 	figure.thumb__item
 		.thumb__overlay
 			svg.thumb__overlay__svg(width='14' height='14' viewbox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg')
 				path(d='M0 7H14M7 0L7 14' stroke='white' stroke-width='2')
 
-		img.thumb__image(data-pre=src data-pre-webp=`${webpSrc(src)}`)
+		img.thumb__image(width="260" height="176" alt=alt data-pre=src data-pre-webp=`${webpSrc(src)} `)
 
 .thumb
 	.thumb__wrapper
-		+image("/images/thumbnail/000001-thumbnail.jpg")
-		+image("/images/thumbnail/000006-thumbnail.jpg")
-		+image("/images/thumbnail/000032-thumbnail.jpg")
-		+image("/images/thumbnail/000034-thumbnail.jpg")
-		+image("/images/thumbnail/000037--thumbnail.jpg")
-		+image("/images/thumbnail/000037-thumbnail.jpg")
-		+image("/images/thumbnail/000038-thumbnail.jpg")
-		+image("/images/thumbnail/000039--thumbnail.jpg")
-		+image("/images/thumbnail/000041-thumbnail.jpg")
-		+image("/images/thumbnail/000042-thumbnail.jpg")
-		+image("/images/thumbnail/000043-thumbnail.jpg")
-		+image("/images/thumbnail/000046--thumbnail.jpg")
-		+image("/images/thumbnail/000046-thumbnail.jpg")
-		+image("/images/thumbnail/000048-thumbnail.jpg")
-		+image("/images/thumbnail/000049-thumbnail.jpg")
-		+image("/images/thumbnail/000049--thumbnail.jpg")
-		+image("/images/thumbnail/000050-+-thumbnail.jpg")
-		+image("/images/thumbnail/000050-thumbnail.jpg")
-		+image("/images/thumbnail/000053--thumbnail.jpg")
-		+image("/images/thumbnail/000053-thumbnail.jpg")
-		+image("/images/thumbnail/000054-thumbnail.jpg")
-		+image("/images/thumbnail/000057-thumbnail.jpg")
-		+image("/images/thumbnail/000058--thumbnail.jpg")
-		+image("/images/thumbnail/000058-thumbnail.jpg")
-		+image("/images/thumbnail/000059--thumbnail.jpg")
-		+image("/images/thumbnail/000059-thumbnail.jpg")
-		+image("/images/thumbnail/000062-thumbnail.jpg")
-		+image("/images/thumbnail/000065-thumbnail.jpg")
-		+image("/images/thumbnail/001260660004-thumbnail.jpg")
-		+image("/images/thumbnail/001356350015-thumbnail.jpg")
-		+image("/images/thumbnail/IMG_9141-thumbnail.jpg")
-		+image("/images/thumbnail/IMG_9157-thumbnail.jpg")
-		+image("/images/thumbnail/IMG_9158-thumbnail.jpg")
-		+image("/images/thumbnail/IMG_9159-thumbnail.jpg")
-		+image("/images/thumbnail/IMG_9162-thumbnail.jpg")
-		+image("/images/thumbnail/IMG_9163-thumbnail.jpg")
-		+image("/images/thumbnail/xsxs_highres-thumbnail.jpg")
+		each image in data.images 
+			+image(image.src, image.title)

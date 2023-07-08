@@ -62,7 +62,6 @@ class App {
 			},
 
 			afterEnter: () => {
-				console.log(`Enterred ${this.loader.template}`);
 				GlobalHandler.handlePageTemplate(); // sets this.template on all pages
 
 				GlobalHandler.handleCreate(); // Run create() on each page
@@ -203,7 +202,6 @@ class App {
 	}
 
 	addEventListeners() {
-		console.log('add', this);
 		window.addEventListener('resize', debounce(this.onResize.bind(this))); // runs on the next frame
 
 		window.addEventListener('wheel', this.onWheel.bind(this));

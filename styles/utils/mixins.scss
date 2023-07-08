@@ -32,3 +32,21 @@
 	visibility: hidden;
 	// opacity: 0;
 }
+
+%hide-on-desktop {
+	@include media('>laptop') {
+		visibility: hidden;
+	}
+}
+
+%hide-on-laptop {
+	@include media('<laptop') {
+		visibility: hidden;
+	}
+}
+
+%hide-on-tablet {
+	@include media('<tablet') {
+		visibility: hidden;
+	}
+}

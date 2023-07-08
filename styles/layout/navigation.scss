@@ -13,7 +13,9 @@ nav {
 
 	transform: translateY(0%);
 
-	@include media('<tablet') {
+	@extend %hide-on-laptop;
+
+	@include media('<laptop') {
 		width: 100%;
 		flex-basis: 0; /* Adjust these values as necessary */
 		max-height: 0%;
@@ -186,12 +188,18 @@ nav {
 		@extend %link--hidden;
 	}
 
-	& span:first-child {
+	& span {
 		align-self: flex-start;
 	}
 
-	& span:nth-child(2) {
-		align-self: flex-end;
+	&.shift {
+		& span:first-child {
+			align-self: flex-start;
+		}
+
+		& span:nth-child(2) {
+			align-self: flex-end;
+		}
 	}
 
 	@include media('<phone') {
@@ -212,9 +220,11 @@ nav {
 	cursor: pointer;
 	user-select: none;
 
-	@include media('>tablet') {
-		display: none;
-	}
+	@extend %hide-on-desktop;
+
+	// @include media('>tablet') {
+	// 	display: none;
+	// }
 }
 
 .nav__content {

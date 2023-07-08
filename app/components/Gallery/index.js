@@ -24,10 +24,11 @@ export default class Gallery extends Component {
 			},
 		});
 
+		this.isLoaded = false;
+
 		this.items = [];
 
 		this.position = 0;
-		this.positionTarget = 0;
 		this.direction = 1;
 		this.velocity = 1;
 
@@ -52,12 +53,53 @@ export default class Gallery extends Component {
 
 		this.bounds = this.getBounds();
 
+		// Image related
 		this.previousIndex = 0;
-		this.activeIndex = 14;
+		this.activeIndex = 0;
+
+		this.createTimeline();
 	}
 
-	// Called on preloaded
+	createTimeline() {
+		// GSAP.set(this.elements.main.figure, { opacity: 0 });
+		this.tl = GSAP.timeline({ paused: true });
+		let duration = this.mobilemediaQuery.matches ? 0.5 : 1; // Desktop 1.5s
+
+		this.tl.fromTo(
+			this.elements.main.figure,
+			{
+				opacity: 0,
+			},
+			{
+				opacity: 1,
+				duration: duration,
+			}
+		);
+
+		this.tl.fromTo(
+			this.elements.coverBackground,
+			{
+				opacity: 0,
+			},
+			{
+				opacity: 0.18,
+				duration: duration,
+			}
+		);
+	}
+
+	fadeIn() {
+		console.log('fadein');
+		this.tl.play();
+	}
+
+	fadeOut() {
+		console.log('fadeout');
+		this.tl.reverse();
+	}
+
 	create(thumbItems) {
+		// Called on preloaded
 		if (!thumbItems) return;
 
 		this.elements.thumb.items = thumbItems;
@@ -68,17 +110,29 @@ export default class Gallery extends Component {
 			this.items.push(newItem);
 		});
 
-		// this.previousIndex = 0;
-		// this.activeIndex = this.items.length / 2;
+		this.bounds = this.getBounds();
 
-		this.getBounds();
-		this.changeActive();
+		this.reveal();
+	}
+
+	reveal() {
+		GSAP.fromTo(
+			document.querySelector('.loading__icon__container'),
+			{
+				autoAlpha: 0,
+			},
+			{ delay: 1, autoAlpha: 1, onComplete: () => (this.isLoaded = true) }
+		);
 	}
 
 	updateImageSource() {
-		this.elements.main.image.onload = () => this.showFigure();
 		this.elements.main.image.src = this.items[this.activeIndex].src;
 		this.elements.coverBackground.src = this.items[this.activeIndex].thumbSrc;
+	}
+
+	replaceImageSource() {
+		this.elements.main.image.src = this.dummyImage.src;
+		this.elements.coverBackground.src = this.dummyImageBg.src;
 	}
 
 	clickEvent(target) {
@@ -92,151 +146,73 @@ export default class Gallery extends Component {
 			window.innerWidth / 2 -
 			this.items[targetIndex].bounds.width / 2;
 
-		if (this.position > this.targetPosition) {
-			this.direction = -1;
-		} else {
-			this.direction = 1;
-		}
-		// GSAP.to(this.elements.thumb.wrapper, {
-		// 	duration: 1.5,
-		// 	ease: 'power4.out',
-		// 	x: targetPosition,
-		// 	onComplete: () => (this.isAnimating = false),
-		// });
+		this.direction = this.position > this.targetPosition ? -1 : 1;
 	}
+
 	changeActive() {
 		this.items[this.previousIndex].setInactive();
 		this.items[this.activeIndex].setActive();
 
 		this.previousIndex = this.activeIndex;
 
-		// const centeredPosition =
-		// 	-this.items[this.activeIndex].bounds.left +
-		// 	window.innerWidth / 2 -
-		// 	this.items[this.activeIndex].bounds.width / 2;
+		this.fadeOut();
 
-		// GSAP.to(this.elements.thumb.wrapper, {
-		// 	duration: 1.5,
-		// 	ease: 'power4.out',
-		// 	x: centeredPosition,
-		// });
-
-		// this.position = centeredPosition;
-		let duration = 1.5;
-		if (this.mobilemediaQuery.matches) duration = 0.5;
-
-		if (!this.mobilemediaQuery.matches) {
-			// GSAP.fromTo(
-			// 	this.elements.main.figure,
-			// 	{
-			// 		opacity: 0,
-			// 	},
-			// 	{
-			// 		opacity: 1,
-			// 		duration: duration,
-			// 		ease: 'power4.out',
-			// 	}
-			// );
-
-			GSAP.fromTo(
-				this.elements.coverBackground,
-				{
-					opacity: 0,
-				},
-				{
-					opacity: 0.18,
-					duration: duration,
-					ease: 'power4.out',
-				}
-			);
-		} else {
-		}
-		GSAP.fromTo(
-			this.elements.main.figure,
-			{
-				opacity: 1,
-			},
-			{
-				opacity: 0,
-				duration: duration,
-				ease: 'power4.out',
-			}
-		);
 		this.updateImageSource();
-	}
-
-	showFigure() {
-		let duration = 1.5;
-		if (this.mobilemediaQuery.matches) duration = 0.5;
-
-		GSAP.fromTo(
-			this.elements.main.figure,
-			{
-				opacity: 0,
-			},
-			{
-				opacity: 1,
-				duration: duration,
-				delay: 0,
-			}
-		);
 	}
 
 	getBounds() {
 		let totalWidth = 0;
-		let padding = 6;
+		const padding = 6;
 
 		map(this.items, (item) => {
 			item.getBounds();
-			// prettier-ignore
 			totalWidth = totalWidth + (item.bounds.width + padding * 2);
 			item.position = totalWidth;
 		});
 
 		this.totalWidth = totalWidth;
-		console.log(`totalWidth: ${totalWidth}`);
 
 		return this.element.getBoundingClientRect();
 	}
 
 	addEventListeners() {
+		this.elements.main.image.addEventListener('load', () => {
+			if (!this.isLoaded) return;
+			this.fadeIn();
+		});
+
 		this.elements.thumb.wrapper.addEventListener('click', (e) => {
 			e.preventDefault();
-			if (e.target.classList.contains('thumb__item')) {
-				// this.activeIndex = e.target.getAttribute('data-index');
-				this.clickEvent(e.target);
-			} else if (!e.target.classList.contains('thumb__wrapper')) {
-				this.clickEvent(e.target.closest('.thumb__item'));
-				// this.activeIndex =
-				// 	.getAttribute('data-index');
-				// this.changeActive();
-			}
+			e.target.classList.contains('thumb__item')
+				? this.clickEvent(e.target)
+				: this.clickEvent(e.target.closest('.thumb__item'));
 		});
 
-		window.addEventListener('keydown', (e) => {
-			this.isClicked = false;
-			if (e.key === 'ArrowLeft' || e.keyCode === 37) {
-				if (this.activeIndex > 0) {
-					this.activeIndex--;
-					this.position += 300;
-					this.changeActive();
-				}
-			}
-
-			if (e.key === 'ArrowRight' || e.keyCode === 38) {
-				this.isClicked = false;
-				if (this.activeIndex < this.items.length - 1) {
-					this.activeIndex++;
-
-					this.position -= 300;
-					this.changeActive();
-				}
-			}
-		});
+		window.addEventListener('keydown', this.onKeyDown.bind(this));
 	}
 
 	removeEventListener() {}
 
+	onKeyDown(e) {
+		this.isClicked = false;
+		if (e.key === 'ArrowLeft' || e.keyCode === 37) {
+			if (this.activeIndex > 0) {
+				this.activeIndex--;
+				this.position += 300;
+				this.changeActive();
+			}
+		}
+
+		if (e.key === 'ArrowRight' || e.keyCode === 38) {
+			this.isClicked = false;
+			if (this.activeIndex < this.items.length - 1) {
+				this.activeIndex++;
+
+				this.position -= 300;
+				this.changeActive();
+			}
+		}
+	}
 	onWheel({ pixelY }) {
 		this.isClicked = false;
 
@@ -268,7 +244,6 @@ export default class Gallery extends Component {
 			this.isTouchPoint = true;
 			this.speed.target += Math.abs(yDistance);
 
-			// Update the starting point for the next move
 			this.y.start = y;
 		}
 	}
@@ -289,11 +264,12 @@ export default class Gallery extends Component {
 
 	onResize() {
 		this.bounds = this.getBounds();
-
-		// if (this.activeIndex && this.previousIndex) this.changeActive();
 	}
 
 	update() {
+		if (!this.isLoaded) return;
+
+		// console.log(this.imageTransition);
 		this.speed.current = lerp(
 			this.speed.current,
 			this.speed.target,
@@ -336,14 +312,6 @@ export default class Gallery extends Component {
 
 		this.position = lerp(this.position, this.targetPosition, this.speed.lerp); // you can adjust the 0.1 to control the speed of snapping
 
-		// GSAP.to(this.elements.thumb.wrapper, {
-		// 	x: this.position,
-		// 	duration: 1.5,
-		// 	immediateRender: false,
-		// 	overwrite: 'all',
-		// });
-
-		// console.log(targetPosition);
 		this.elements.thumb.wrapper.style.transform = `translate3d(${this.position}px, 0, 0)`;
 	}
 }

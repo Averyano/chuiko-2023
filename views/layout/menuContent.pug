@@ -1,18 +1,16 @@
+- var data = dataGlobal.home.navigation;
+
 .nav__content 
 	.menu__content
-		.nav__item 
-			h1.nav__item__title Victoria Chuiko
-			p.nav__item__subtitle is a cinematographer, photographer from Kyiv, Ukraine.
-		.nav__item 
-			h1.nav__item__title Location
-			p.nav__item__subtitle 
-				|moved to Berlin in 2022
-				br
-				| when Russia invaded Ukraine.
-		.nav__item 
-			h1.nav__item__title Contact Info
-			p.nav__item__subtitle
-				span 
-					a(href="mailto:hello@vi-k.com") hello@vi-k.com
-				span
-					a(href="tel:+4915753557202") +49 15753557202
+		each item in data
+			if (item.lines.length > 0)
+				.nav__item 
+					h1.nav__item__title= item.title
+					p.nav__item__subtitle 
+						each line in item.lines 
+							if (line.type === "text")
+								span 
+									| #{line.textContent}
+							if (line.type === "link")
+								span 
+									a(href="#{line.href}") #{line.textContent}

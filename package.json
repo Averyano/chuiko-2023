@@ -1,7 +1,7 @@
 {
 	"name": "Chuiko 2023",
-	"version": "0.0.3",
-	"description": "chuiko-2023",
+	"version": "0.0.4",
+	"description": "Official website of the vi-k project",
 	"main": "app.js",
 	"scripts": {
 		"build": "webpack --progress --mode production && node sitemapGenerate.js",

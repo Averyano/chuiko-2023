@@ -46,7 +46,6 @@ export default class Canvas extends Component {
 	}
 
 	destroy() {
-		console.log('Canvas Class Destroy');
 		// Traverse scene
 
 		this.scene.traverse((child) => {
@@ -55,7 +54,6 @@ export default class Canvas extends Component {
 					const value = child.material[key];
 
 					if (value && typeof value.dispose === 'function') {
-						console.log(value);
 						value.dispose();
 					}
 				}

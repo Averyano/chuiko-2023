@@ -16,7 +16,9 @@
 		opacity: 0;
 	}
 
-	@include media('>tablet') {
-		display: none;
-	}
+	@extend %hide-on-desktop;
+
+	// @include media('>tablet') {
+	// 	display: none;
+	// }
 }

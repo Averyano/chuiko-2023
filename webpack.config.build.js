@@ -5,6 +5,8 @@ const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
 const ImageminWebpWebpackPlugin = require('imagemin-webp-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
+const InsertConsoleLogPlugin = require('./webpack/insert-console-log-plugin');
+
 module.exports = {
 	mode: 'production',
 
@@ -33,6 +35,10 @@ module.exports = {
 						drop_console: true,
 					},
 				},
+			}),
+			new InsertConsoleLogPlugin({
+				assetName: /\.js$/, // or whatever regex matches the files you want
+				log: ["This site is powered by Averyano (2023)", "Check it out: \'https://averyano.com/\' 🌿"], // prettier-ignore
 			}),
 			new ImageMinimizerPlugin({
 				minimizer: {

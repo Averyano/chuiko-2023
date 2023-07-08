@@ -31,7 +31,7 @@ export default class Hamburger extends Component {
 
 		this.isAnimating = true;
 		this.isOpen = !this.isOpen;
-		console.log(this.isOpen);
+
 		if (this.isOpen) {
 			NodeEmitter.emit('openMenu');
 		} else if (!this.isOpen) {
@@ -45,6 +45,7 @@ export default class Hamburger extends Component {
 		this.tl = GSAP.timeline({
 			paused: true,
 		});
+		GSAP.set(this.elements.menuLines, { x: 0 });
 		this.tl.fromTo(
 			this.elements.menuLines[0],
 			{

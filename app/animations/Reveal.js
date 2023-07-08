@@ -50,7 +50,6 @@ export default class Reveal {
 		this.revealElement.style.background = this.color;
 
 		this.originalElement.appendChild(this.revealElement);
-		console.log(this.revealElement);
 	}
 
 	createTimeline({

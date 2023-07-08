@@ -1,7 +1,7 @@
 {
-	"name": "Webpack 5 Starter config by Averyano",
-	"short_name": "Webpack 5 Starter",
-	"description": "Front-end environment for building JavaScript applications.",
+	"name": "vi-k",
+	"short_name": "vi-k",
+	"description": "Official website of the vi-k project",
 	"lang": "en",
 	"dir": "ltr",
 	"start_url": "/",
