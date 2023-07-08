@@ -6,7 +6,7 @@ import map from 'lodash/map';
 import { lerp, clamp } from '../../utils/utils';
 
 export default class Gallery extends Component {
-	constructor() {
+	constructor(isWebpSupported) {
 		super({
 			element: '.cover__wrapper',
 			elements: {
@@ -23,6 +23,8 @@ export default class Gallery extends Component {
 				// thumbItems: '.thumb__item',
 			},
 		});
+
+		this.isWebpSupported = isWebpSupported;
 
 		this.isLoaded = false;
 
@@ -89,12 +91,10 @@ export default class Gallery extends Component {
 	}
 
 	fadeIn() {
-		console.log('fadein');
 		this.tl.play();
 	}
 
 	fadeOut() {
-		console.log('fadeout');
 		this.tl.reverse();
 	}
 
@@ -106,7 +106,11 @@ export default class Gallery extends Component {
 
 		each(this.elements.thumb.items, (item, index) => {
 			item.setAttribute('data-index', index);
-			const newItem = new Item(item, item.querySelector('img'));
+			const newItem = new Item({
+				item: item,
+				image: item.querySelector('img'),
+				format: this.isWebpSupported ? 'webp' : 'jpg',
+			});
 			this.items.push(newItem);
 		});
 

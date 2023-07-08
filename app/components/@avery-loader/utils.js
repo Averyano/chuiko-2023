@@ -42,14 +42,3 @@ export const getPathFromURL = (href) => {
 	const urlObject = new URL(href);
 	return urlObject.pathname;
 };
-
-export const checkWebpSupport = async () => {
-	return new Promise((resolve) => {
-		const webp = new Image();
-		webp.onload = webp.onerror = function () {
-			resolve(webp.height === 1);
-		};
-		webp.src =
-			'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=';
-	});
-};

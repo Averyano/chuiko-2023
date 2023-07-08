@@ -6,7 +6,7 @@ html(lang="en")
 	head
 		include ./head
 
-	body
+	body.refresh
 
 		// Loader
 		include ./components/preloader
@@ -21,6 +21,8 @@ html(lang="en")
 
 
 
-		//- .grain__min
+		.grain__min
+			.grain__min__inside(data-pre="images/noise.jpg")
+		//- .grain(data-pre="images/grain.webp")
 		// Footer
 		//- include ./layout/footer

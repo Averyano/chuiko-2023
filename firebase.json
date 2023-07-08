@@ -1,28 +1,21 @@
 {
 	"hosting": {
 		"public": "public",
-		"ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+		"ignore": [
+			"firebase.json",
+			"firebase (old).json",
+			"**/.*",
+			"**/node_modules/**"
+		],
 		"rewrites": [
 			{
-				"source": "/",
-				"destination": "/index.html"
-			},
-			{
-				"source": "/home",
-				"destination": "/index.html"
-			},
-			{
-				"source": "/404",
-				"destination": "/notfound.html"
-			},
-			{
 				"source": "**",
-				"destination": "/notfound.html"
+				"destination": "/index.html"
 			}
 		],
 		"headers": [
 			{
-				"source": "**/*.@(jpg|jpeg|gif|png|webp)",
+				"source": "**/*.@(jpg|jpeg|gif|png|webp|js|css|woff|ttf)",
 				"headers": [
 					{
 						"key": "Cache-Control",

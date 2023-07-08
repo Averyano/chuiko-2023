@@ -59,6 +59,17 @@ const insertAfter = (referenceNode, newNode) => {
 	referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 };
 
+const checkWebpSupport = async () => {
+	return new Promise((resolve) => {
+		const webp = new Image();
+		webp.onload = webp.onerror = function () {
+			resolve(webp.height === 1);
+		};
+		webp.src =
+			'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=';
+	});
+};
+
 export {
 	map,
 	clamp,
@@ -70,4 +81,5 @@ export {
 	getRandomFloat,
 	debounce,
 	insertAfter,
+	checkWebpSupport,
 };

@@ -5,15 +5,14 @@
 	position: fixed;
 	top: 0;
 	width: 100vw;
-	z-index: 10;
+	z-index: 1;
 }
-.grain__min:after {
+.grain__min__inside {
 	animation: grain 8s steps(10) infinite;
-	background-image: url(images/noise.jpg);
 	content: '';
 	height: 300%;
 	left: -50%;
-	opacity: 0.06;
+	opacity: 0.04;
 	position: fixed;
 	top: -100%;
 	width: 300%;

@@ -2,18 +2,19 @@ import Component from '../../classes/Component';
 import { modifyImagePath } from './utils';
 
 export default class Item extends Component {
-	constructor(item, img) {
+	constructor({ item, image, format }) {
 		super({
 			element: item,
 			elements: {
-				image: img,
+				image: image,
 				overlay: '.thumb__overlay',
 			},
 		});
 
 		this.bounds = this.getBounds();
 		this.thumbSrc = this.elements.image.getAttribute('src');
-		this.src = modifyImagePath(this.thumbSrc);
+
+		this.src = modifyImagePath(this.thumbSrc, format);
 	}
 
 	create() {}

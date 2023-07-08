@@ -1,0 +1,35 @@
+.nav__item {
+	max-width: 250px;
+	// min-width: 120px;
+}
+.nav__item__title {
+	margin-bottom: 4px;
+}
+.nav__item__subtitle {
+	display: flex;
+	flex-direction: column;
+	user-select: text;
+
+	a {
+		@extend %link--hidden;
+	}
+
+	& span {
+		align-self: flex-start;
+	}
+
+	&.shift {
+		& span:first-child {
+			align-self: flex-start;
+		}
+
+		& span:nth-child(2) {
+			align-self: flex-end;
+		}
+	}
+
+	@include media('<phone') {
+		min-height: 48px;
+		justify-content: space-between;
+	}
+}

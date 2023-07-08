@@ -30,13 +30,12 @@
 
 %hidden {
 	visibility: hidden;
-	// opacity: 0;
+	opacity: 0;
 }
 
-%hide-on-desktop {
-	@include media('>laptop') {
-		visibility: hidden;
-	}
+%visible {
+	opacity: 1;
+	visibility: visible;
 }
 
 %hide-on-laptop {

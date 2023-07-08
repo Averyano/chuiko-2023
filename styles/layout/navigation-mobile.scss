@@ -1,24 +1,81 @@
-.menu__content {
+// Menu Icon
+.nav__menu__container {
+	position: absolute;
+
+	width: 48px;
+	height: 48px;
+
+	top: 2vh;
+	right: 2vh;
+
+	cursor: pointer;
+	user-select: none;
+
+	z-index: 99;
+
+	@include media('>laptop') {
+		visibility: hidden;
+		opacity: 0;
+	}
+}
+.nav__menu__line {
+	position: absolute;
+	left: 50%;
+
+	width: 50%;
+	height: 2px;
+
+	background-color: rgb(var(--data-color-white));
+	transition: background-color 0.3s;
+	transition-timing-function: ease-in;
+	transform: translateX(-50%);
+
+	&:first-child {
+		top: 15px; // 15px from the top
+	}
+
+	&:nth-child(2) {
+		top: 23px; // 7px distance between lines
+		// width: 40%;
+	}
+
+	&:last-child {
+		top: 31px; // 15px from the bottom
+	}
+}
+
+.nav__content {
 	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: #111;
+	z-index: 10;
+}
+
+.menu__content {
 	display: grid;
 	grid-template-rows: repeat(3, 1fr);
 	grid-gap: 100px;
 	gap: 100px;
-	height: 100%;
-	max-width: 1400px;
-	margin: auto;
-	padding: 20vh 0;
 	align-items: center;
 	justify-items: start;
 	justify-content: center;
+
+	width: 100%;
+	height: 100%;
+	max-width: 1400px;
+
+	margin: auto;
+	padding: 20vh 0;
 
 	& .nav__item {
 		opacity: 0;
 	}
 
-	@extend %hide-on-desktop;
-
-	// @include media('>tablet') {
-	// 	display: none;
-	// }
+	@include media('>laptop') {
+		visibility: hidden;
+		opacity: 0;
+	}
 }

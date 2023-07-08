@@ -2,10 +2,10 @@ import Component from '../../classes/Component';
 import GSAP from 'gsap';
 import map from 'lodash/map';
 import GlobalHandler from '../../classes/GlobalHandler';
-import { checkWebpSupport } from './utils.js';
 import NodeEmitter from '../../classes/NodeEmitter';
+
 export default class Preloader extends Component {
-	constructor() {
+	constructor({ isWebpSupported }) {
 		super({
 			element: '.preloader',
 			elements: {
@@ -21,6 +21,8 @@ export default class Preloader extends Component {
 			},
 		});
 
+		this.isWebpSupported = isWebpSupported;
+		console.log(`this.isWebpSupported ${this.isWebpSupported}`);
 		this.firstReveal = true;
 		this.isIntroComplete = 0;
 		this.elementToAnimate = [this.elements.overlay, this.elements.main];
@@ -35,10 +37,7 @@ export default class Preloader extends Component {
 	 * LOADER
 	 */
 	// called from Loader
-	async createLoader(template) {
-		// if (!this.isWebpSupport) this.isWebpSupported = await checkWebpSupport();
-		if (!this.isWebpSupport) this.isWebpSupported = false;
-		console.log(this.isWebpSupported);
+	createLoader(template) {
 		this.introAnimation();
 
 		if (template === '404') return (this.isLoaded = true);

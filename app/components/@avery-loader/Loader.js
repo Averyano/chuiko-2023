@@ -18,6 +18,7 @@ export default class Loader extends EventEmitter {
 		onEnter,
 		beforeEnter,
 		afterEnter,
+		isWebpSupported,
 	}) {
 		super();
 
@@ -32,7 +33,9 @@ export default class Loader extends EventEmitter {
 
 		this.pages = pages; // each page has a class and url(s)
 		// this.canvas = canvas;
-		this.preloader = new Preloader(); // allows using custom preloader
+		this.preloader = new Preloader({
+			isWebpSupported,
+		}); // allows using custom preloader
 
 		this.content = document.querySelector('.content');
 

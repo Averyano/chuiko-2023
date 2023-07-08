@@ -7,13 +7,13 @@ import Page from '../../classes/Page';
 import each from 'lodash/each';
 
 export default class HomePage extends Page {
-	constructor(el, callback) {
+	constructor(el, isWebpSupported) {
 		super({
 			element: el,
 			elements: {},
 		});
 
-		this.callback = callback;
+		this.isWebpSupported = isWebpSupported;
 		this.id = 'home';
 		this.isCreated = false;
 	}
@@ -26,7 +26,7 @@ export default class HomePage extends Page {
 		if (!this.isCreated) {
 			this.components = {
 				cover: new CoverSection(),
-				gallery: new Gallery(),
+				gallery: new Gallery(this.isWebpSupported),
 			};
 			this.isCreated = true;
 		}

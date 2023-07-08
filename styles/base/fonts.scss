@@ -1,10 +1,4 @@
-// @import './../node_modules/@fontsource/raleway/index.css';
-// @import './../node_modules/@fontsource/raleway/900.css';
-// @import './../node_modules/@fontsource/raleway/800.css';
-// @import './../node_modules/@fontsource/raleway/700.css';
-
-// Supports weights 100-900
-@import './../node_modules/@fontsource-variable/kumbh-sans/index.css';
+// ----------------------------------------------------------------------------
 @font-face {
 	font-family: 'Thunder';
 	src: url('fonts/Thunder-SemiBoldLC.woff') format('woff'),
@@ -13,6 +7,7 @@
 	font-style: normal;
 	font-weight: normal;
 	text-rendering: optimizeLegibility;
+	font-display: swap;
 }
 @font-face {
 	font-family: 'Kharkiv Tone';
@@ -20,4 +15,5 @@
 	font-style: normal;
 	font-weight: normal;
 	text-rendering: optimizeLegibility;
+	font-display: swap;
 }
