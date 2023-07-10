@@ -23,7 +23,6 @@ export default class Gallery extends Component {
 				// thumbItems: '.thumb__item',
 			},
 		});
-
 		this.isWebpSupported = isWebpSupported;
 
 		this.isLoaded = false;
@@ -32,7 +31,6 @@ export default class Gallery extends Component {
 
 		this.position = 0;
 		this.direction = 1;
-		this.velocity = 1;
 
 		this.speed = {
 			current: 0,
@@ -44,28 +42,31 @@ export default class Gallery extends Component {
 		this.mobilemediaQuery = window.matchMedia('(max-width: 1024px)');
 		if (this.mobilemediaQuery.matches) this.speed.lerp = 0.35;
 
-		this.y = {
+		// Touch related
+		this.x = {
 			start: 0,
 			end: 0,
 		};
 
-		this.isAnimating = false;
-		this.isTouchPoint = false;
-		this.timer = null;
+		this.time = {
+			start: 0,
+			end: 0,
+		};
 
+		// Bounds
 		this.bounds = this.getBounds();
 
 		// Image related
 		this.previousIndex = 0;
-		this.activeIndex = 0;
+		this.activeIndex = 1;
 
+		// Fade animation
 		this.createTimeline();
 	}
 
 	createTimeline() {
-		// GSAP.set(this.elements.main.figure, { opacity: 0 });
 		this.tl = GSAP.timeline({ paused: true });
-		let duration = this.mobilemediaQuery.matches ? 0.5 : 1; // Desktop 1.5s
+		let duration = this.mobilemediaQuery.matches ? 0.5 : 1; // Desktop 1s, Mobile 0.5s
 
 		this.tl.fromTo(
 			this.elements.main.figure,
@@ -99,7 +100,7 @@ export default class Gallery extends Component {
 	}
 
 	create(thumbItems) {
-		// Called on preloaded
+		// create() is called on preloaded
 		if (!thumbItems) return;
 
 		this.elements.thumb.items = thumbItems;
@@ -142,7 +143,10 @@ export default class Gallery extends Component {
 	clickEvent(target) {
 		this.isClicked = true;
 		const targetIndex = target.getAttribute('data-index');
+		this.switchTarget(targetIndex);
+	}
 
+	switchTarget(targetIndex) {
 		if (this.activeIndex === targetIndex) return;
 
 		this.targetPosition =
@@ -221,72 +225,56 @@ export default class Gallery extends Component {
 		this.isClicked = false;
 
 		this.direction = pixelY > 0 ? 1 : -1;
-		this.velocity += pixelY * 0.1;
 		this.speed.target += Math.abs(pixelY * 0.5);
-
-		this.isAnimating = true;
 	}
 
 	onTouchDown(e) {
 		this.isClicked = false;
 		this.isTouch = true;
 
-		this.y.start = e.touches ? e.touches[0].clientX : e.clientX;
+		this.time.start = Date.now();
+		this.x.start = e.touches ? e.touches[0].clientX : e.clientX;
+		this.speed.extra = 0;
 	}
 
 	onTouchMove(e) {
 		if (!this.isTouch) return;
 
-		const y = e.touches ? e.touches[0].clientX : e.clientX;
+		const x = e.touches ? e.touches[0].clientX : e.clientX;
 
-		this.y.end = y;
+		this.distance = x - this.x.start;
 
-		let yDistance = y - this.y.start;
-
-		if (Math.abs(yDistance) > 2) {
-			this.direction = yDistance < 0 ? -1 : 1;
-			this.isTouchPoint = true;
-			this.speed.target += Math.abs(yDistance);
-
-			this.y.start = y;
+		if (Math.abs(this.distance) > 2) {
+			this.direction = this.distance < 0 ? -1 : 1;
+			this.speed.extra = Math.min(Math.abs(this.distance), 30);
 		}
 	}
 
 	onTouchUp(e) {
 		if (!this.isTouch) return;
 		this.isTouch = false;
-		this.isTouchPoint = false;
 
-		const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+		const x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
 
-		this.y.end = y;
+		this.x.end = x;
+		this.time.end = Date.now();
 
-		const values = {
-			y: this.y,
-		};
+		if (
+			this.time.end - this.time.start < 300 &&
+			this.time.end - this.time.start > 50
+		) {
+			this.isClicked = true;
+			this.switchTarget(Math.max(0, this.activeIndex - this.direction));
+		}
+
+		this.speed.extra = 0;
 	}
 
 	onResize() {
 		this.bounds = this.getBounds();
 	}
 
-	update() {
-		if (!this.isLoaded) return;
-
-		// console.log(this.imageTransition);
-		this.speed.current = lerp(
-			this.speed.current,
-			this.speed.target,
-			this.speed.lerp
-		);
-
-		this.speed.target = clamp(this.speed.target, 1, 2000);
-		this.speed.current = clamp(this.speed.current, 1, 2000);
-
-		this.speed.target *= 0.5;
-
-		this.position += this.speed.current * this.direction;
-
+	findClosestItem() {
 		let closestImageIndex;
 		let smallestDistance = Infinity;
 
@@ -307,14 +295,36 @@ export default class Gallery extends Component {
 			this.activeIndex = closestImageIndex;
 			this.changeActive();
 		}
+	}
 
+	update() {
+		if (!this.isLoaded) return;
+
+		this.speed.target += this.speed.extra;
+		this.speed.target *= 0.5;
+
+		this.speed.current = lerp(
+			this.speed.current,
+			this.speed.target,
+			this.speed.lerp
+		);
+
+		this.speed.target = clamp(this.speed.target, 1, 2000);
+		this.speed.current = clamp(this.speed.current, 1, 2000);
+
+		this.position += this.speed.current * this.direction;
+
+		// center the position by the closest item
+		this.findClosestItem();
+
+		// if click/swipe event
 		if (!this.isClicked)
 			this.targetPosition =
 				-this.items[this.activeIndex].bounds.left +
 				window.innerWidth / 2 -
 				this.items[this.activeIndex].bounds.width / 2;
 
-		this.position = lerp(this.position, this.targetPosition, this.speed.lerp); // you can adjust the 0.1 to control the speed of snapping
+		this.position = lerp(this.position, this.targetPosition, this.speed.lerp);
 
 		this.elements.thumb.wrapper.style.transform = `translate3d(${this.position}px, 0, 0)`;
 	}

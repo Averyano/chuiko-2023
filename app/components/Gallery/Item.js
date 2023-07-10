@@ -10,11 +10,11 @@ export default class Item extends Component {
 				overlay: '.thumb__overlay',
 			},
 		});
-
+		console.log(format);
 		this.bounds = this.getBounds();
 		this.thumbSrc = this.elements.image.getAttribute('src');
-
 		this.src = modifyImagePath(this.thumbSrc, format);
+		console.log(this.src);
 	}
 
 	create() {}

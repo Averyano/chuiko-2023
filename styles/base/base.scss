@@ -18,7 +18,8 @@ html {
 
 	color: rgb(var(--data-color-black));
 	background: rgb(var(--data-color-background));
-	overflow: hidden;
+	// overflow: hidden;
+	// overflow: hidden;
 
 	overscroll-behavior-x: none;
 
@@ -26,7 +27,7 @@ html {
 
 	@include media('<tablet') {
 		font-size: calc(100vw / 343 * 10);
-		overflow: auto;
+		// overflow: auto;
 		overflow-x: hidden;
 	}
 
@@ -93,6 +94,6 @@ img {
 }
 
 .refresh {
-	overflow: hidden;
-	touch-action: none;
+	// overflow: hidden;
+	// touch-action: none;
 }

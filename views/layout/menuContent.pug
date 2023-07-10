@@ -6,7 +6,7 @@
 			if (item.lines.length > 0)
 				.nav__item 
 					h1.nav__item__title= item.title
-					p.nav__item__subtitle 
+					p.nav__item__subtitle(class=item.shift ? "shift" : "") 
 						each line in item.lines 
 							if (line.type === "text")
 								span 

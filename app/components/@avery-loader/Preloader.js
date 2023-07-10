@@ -22,7 +22,7 @@ export default class Preloader extends Component {
 		});
 
 		this.isWebpSupported = isWebpSupported;
-		console.log(`this.isWebpSupported ${this.isWebpSupported}`);
+
 		this.firstReveal = true;
 		this.isIntroComplete = 0;
 		this.elementToAnimate = [this.elements.overlay, this.elements.main];

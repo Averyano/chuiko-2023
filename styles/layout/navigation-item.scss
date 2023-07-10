@@ -29,7 +29,9 @@
 	}
 
 	@include media('<phone') {
-		min-height: 48px;
-		justify-content: space-between;
+		&.shift {
+			min-height: 48px;
+			justify-content: space-between;
+		}
 	}
 }

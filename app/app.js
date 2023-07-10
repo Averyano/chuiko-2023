@@ -21,7 +21,9 @@ class App {
 
 	async create() {
 		window.scrollTo(0, 0);
-		this.isWebpSupported = await checkWebpSupport();
+		// this.isWebpSupported = await checkWebpSupport();
+		this.isWebpSupported = false;
+		console.log(`this.isWebpSupported ${this.isWebpSupported}`);
 
 		this.createContent();
 		this.createPreloader();
@@ -86,7 +88,7 @@ class App {
 	createContent() {
 		// Pages
 		this.mainDiv = document.querySelector('.main-div');
-
+		console.log(`isWebpSupported ${this.isWebpSupported}`);
 		this.home = new HomePage('.cover', this.isWebpSupported);
 		this.notfound = new NotFound('.notfound');
 
@@ -111,6 +113,7 @@ class App {
 
 	onPreloaded() {
 		console.log('%c Preloaded');
+
 		if (this.loader.template === 'home') {
 			this.home.components.gallery.create(
 				this.loader.preloader.elements.thumbItems

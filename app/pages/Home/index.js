@@ -14,6 +14,7 @@ export default class HomePage extends Page {
 		});
 
 		this.isWebpSupported = isWebpSupported;
+		console.log(`this.isWebpSupported ${this.isWebpSupported}`);
 		this.id = 'home';
 		this.isCreated = false;
 	}
