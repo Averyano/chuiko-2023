@@ -21,8 +21,8 @@ class App {
 
 	async create() {
 		window.scrollTo(0, 0);
-		// this.isWebpSupported = await checkWebpSupport();
-		this.isWebpSupported = false;
+		this.isWebpSupported = await checkWebpSupport();
+		// this.isWebpSupported = false;
 		console.log(`this.isWebpSupported ${this.isWebpSupported}`);
 
 		this.createContent();

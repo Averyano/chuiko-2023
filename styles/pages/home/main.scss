@@ -6,6 +6,7 @@
 	padding: 0 12px;
 
 	z-index: z('content');
+	position: relative;
 
 	@include media('<phone') {
 		flex-basis: 75%;
@@ -21,10 +22,12 @@
 }
 
 .main__figure {
+	padding-top: 6px;
 	@extend %center;
-
+	position: relative;
 	height: 100%;
 	opacity: 0;
+	z-index: z('content');
 }
 .main__image {
 	max-height: 100%;
