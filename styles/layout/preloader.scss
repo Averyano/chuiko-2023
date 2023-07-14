@@ -51,8 +51,12 @@
 .preloader__svg--stroke {
 	stroke-dasharray: 1000;
 	stroke-dashoffset: 0;
+	stroke: white;
+	stroke-width: 2px;
 }
 .preloader__svg--filled {
+	transform: scale(0.99);
+	transform-origin: left;
 	position: absolute;
 	top: 0;
 	left: 0;

@@ -132,6 +132,16 @@ export default class Preloader extends Component {
 			0
 		);
 
+		GSAP.to(
+			this.elements.stroke,
+			{
+				strokeDashoffset: -1000,
+				duration: 3,
+				ease: 'out.expo',
+			},
+			'>'
+		);
+
 		// GSAP.set(this.elements.container, { opacity: 1 }, 0);
 	}
 

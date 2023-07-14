@@ -14,6 +14,7 @@ export default class Gallery extends Component {
 					wrapper: '.main__wrapper',
 					figure: '.main__figure',
 					image: '.main__image',
+					loadingIcon: '.loading__icon__container',
 				},
 				thumb: {
 					el: '.thumb',
@@ -67,6 +68,14 @@ export default class Gallery extends Component {
 	createTimeline() {
 		this.tl = GSAP.timeline({ paused: true });
 		let duration = this.mobilemediaQuery.matches ? 0.5 : 1; // Desktop 1s, Mobile 0.5s
+
+		this.tl.fromTo(
+			this.elements.main.loadingIcon,
+			{ autoAlpha: 1 },
+			{ autoAlpha: 0, duration: 0.3 }
+		);
+
+		GSAP.set(this.elements.main.loadingIcon, { autoAlpha: 0 });
 
 		this.tl.fromTo(
 			this.elements.main.figure,
@@ -126,18 +135,20 @@ export default class Gallery extends Component {
 			{
 				autoAlpha: 0,
 			},
-			{ delay: 1, autoAlpha: 1, onComplete: () => (this.isLoaded = true) }
+			{
+				delay: 1,
+				autoAlpha: 1,
+				onComplete: () => {
+					this.isLoaded = true;
+					this.fadeIn();
+				},
+			}
 		);
 	}
 
 	updateImageSource() {
 		this.elements.main.image.src = this.items[this.activeIndex].src;
 		this.elements.coverBackground.src = this.items[this.activeIndex].thumbSrc;
-	}
-
-	replaceImageSource() {
-		this.elements.main.image.src = this.dummyImage.src;
-		this.elements.coverBackground.src = this.dummyImageBg.src;
 	}
 
 	clickEvent(target) {

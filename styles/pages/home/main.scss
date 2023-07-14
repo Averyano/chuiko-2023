@@ -22,11 +22,12 @@
 }
 
 .main__figure {
-	padding-top: 6px;
 	@extend %center;
+
 	position: relative;
 	height: 100%;
 	opacity: 0;
+	padding-top: 6px;
 	z-index: z('content');
 }
 .main__image {
