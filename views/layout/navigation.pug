@@ -4,13 +4,14 @@ nav
 	.nav__wrapper 
 		.nav__top
 			each item in data
-				.nav__item 
-					h1.nav__item__title= item.title
-					p.nav__item__subtitle(class=item.shift ? "shift" : "") 
-						each line in item.lines 
-							if (line.type === "text")
-								span 
-									| #{line.textContent}
-							if (line.type === "link")
-								span 
-									a(href=line.href target="_blank") #{line.textContent}
+				if (item.lines && item.lines.length > 0)
+					.nav__item 
+						h1.nav__item__title= item.title
+						p.nav__item__subtitle(class=item.shift ? "shift" : "") 
+							each line in item.lines 
+								if (line.type === "text")
+									span 
+										| #{line.textContent}
+								if (line.type === "link")
+									span 
+										a(href=line.href target="_blank") #{line.textContent}
