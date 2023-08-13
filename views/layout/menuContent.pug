@@ -3,7 +3,7 @@
 .nav__content 
 	.menu__content
 		each item in data
-			if (item.lines && item.lines.length > 0)
+			if (item.lines && item.lines.length > 0 && item.title.length > 0)
 				.nav__item 
 					h1.nav__item__title= item.title
 					p.nav__item__subtitle(class=item.shift ? "shift" : "") 

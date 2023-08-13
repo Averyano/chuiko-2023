@@ -14,7 +14,7 @@ The front end of the portfolio was made entirely with plain JavaScript code usin
 
 ### Back End
 
-The site is hosted using [Firebase](https://firebase.google.com/) by Google. It's a static generated site, so it has no back-end. Currently, [Pug](https://pugjs.org/api/getting-started.html) views are populated using data from home.json local file.
+The site is hosted using [Firebase](https://firebase.google.com/) by Google. It's a static generated site, so it has no back-end. Currently, [Pug](https://pugjs.org/api/getting-started.html) views are populated using data from home.json local file. We also use [Gulp](https://gulpjs.com/) to convert images to WebP format.
 
 ## Installation
 
@@ -27,5 +27,5 @@ npm start
 
 # Credits
 
-Site is made by Averyano in 2023. 
+Site is made by Averyano in 2023.
 Checkout my [savee.it](https://savee.it/) for design inspiration [@averyano](https://savee.it/averyano/)

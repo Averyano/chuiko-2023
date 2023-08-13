@@ -38,7 +38,7 @@ module.exports = {
 			}),
 			new InsertConsoleLogPlugin({
 				assetName: /\.js$/, // or whatever regex matches the files you want
-				log: ["This site is powered by Averyano (2023)", "Check it out: \'https://averyano.com/\' 🌿"], // prettier-ignore
+				log: ["This site is powered by Averyano (2023)", "Check it out: \'https://averyano.com/\' 🌿", "It's open-source: \'https://github.com/Averyano/chuiko-2023\'"], // prettier-ignore
 			}),
 			new ImageMinimizerPlugin({
 				minimizer: {
@@ -71,7 +71,7 @@ module.exports = {
 					},
 				},
 			}),
-			new ImageminWebpWebpackPlugin(),
+			// new ImageminWebpWebpackPlugin(),
 		],
 	},
 };

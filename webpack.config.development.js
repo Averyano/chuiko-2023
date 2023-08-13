@@ -20,8 +20,4 @@ module.exports = {
 		compress: true,
 		historyApiFallback: webpackPageRoutes,
 	},
-	optimization: {
-		minimize: true,
-		minimizer: [new ImageminWebpWebpackPlugin()],
-	},
 };

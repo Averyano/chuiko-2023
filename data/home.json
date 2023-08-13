@@ -23,7 +23,13 @@
 			},
 			{
 				"title": "",
-				"lines": []
+				"lines": [
+					{
+						"type": "",
+						"textContent": ""
+					},
+					{ "type": "", "textContent": "" }
+				]
 			},
 			{
 				"title": "Contact Info",

@@ -1,6 +1,6 @@
 {
 	"name": "Chuiko 2023",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "Official website of the vi-k project",
 	"main": "app.js",
 	"scripts": {

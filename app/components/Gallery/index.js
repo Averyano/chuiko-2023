@@ -236,7 +236,7 @@ export default class Gallery extends Component {
 		this.isClicked = false;
 
 		this.direction = pixelY > 0 ? 1 : -1;
-		this.speed.target += Math.abs(pixelY * 0.5);
+		this.speed.target += Math.abs(pixelY);
 	}
 
 	onTouchDown(e) {
