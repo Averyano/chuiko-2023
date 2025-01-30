@@ -70,6 +70,8 @@
 	margin: auto;
 	padding: 20vh 0;
 
+	overflow-y: auto;
+
 	& .nav__item {
 		opacity: 0;
 	}

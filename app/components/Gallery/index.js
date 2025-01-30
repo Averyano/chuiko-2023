@@ -62,7 +62,7 @@ export default class Gallery extends Component {
 		this.activeIndex = 1;
 
 		// Fade animation
-		this.createTimeline();
+		// this.createTimeline();
 	}
 
 	createTimeline() {
@@ -101,11 +101,11 @@ export default class Gallery extends Component {
 	}
 
 	fadeIn() {
-		this.tl.play();
+		// this.tl.play();
 	}
 
 	fadeOut() {
-		this.tl.reverse();
+		// this.tl.reverse();
 	}
 
 	create(thumbItems) {
@@ -147,7 +147,7 @@ export default class Gallery extends Component {
 	}
 
 	updateImageSource() {
-		this.elements.main.image.src = this.items[this.activeIndex].src;
+		// this.elements.main.image.src = this.items[this.activeIndex].src;
 		this.elements.coverBackground.src = this.items[this.activeIndex].thumbSrc;
 	}
 
@@ -337,6 +337,6 @@ export default class Gallery extends Component {
 
 		this.position = lerp(this.position, this.targetPosition, this.speed.lerp);
 
-		this.elements.thumb.wrapper.style.transform = `translate3d(${this.position}px, 0, 0)`;
+		// this.elements.thumb.wrapper.style.transform = `translate3d(${this.position}px, 0, 0)`;
 	}
 }

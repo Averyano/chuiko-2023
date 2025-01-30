@@ -56,18 +56,38 @@ button {
 	outline: none;
 }
 
+.dbg {
+	display: flex;
+	flex-direction: column;
+	position: fixed;
+	z-index: 9999;
+	top: 0;
+	left: 0;
+	opacity: 0;
+
+	span {
+		background: rgba(0, 0, 0, 0.5);
+		color: white;
+		padding: 5px;
+	}
+}
+
 h1,
 h2 {
 	font-family: 'Thunder', 'Trebuchet MS', 'Helvetica', 'Arial';
 	color: white;
-	font-weight: bold;
 	font-size: 50px;
 	line-height: 36px;
 	text-transform: uppercase;
+
+	@include media('>tablet', '<desktop') {
+		font-size: 40px;
+		line-height: 32px;
+	}
 }
 
 p {
-	font-family: 'Kharkiv Tone', 'Trebuchet MS', 'Helvetica', 'Arial';
+	font-family: 'Inter', 'Trebuchet MS', 'Helvetica', 'Arial';
 	color: white;
 	font-weight: 400;
 	font-size: 12px;

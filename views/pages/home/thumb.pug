@@ -1,15 +1,15 @@
 - var data = dataGlobal.home.gallery;
 - var webpSrc = methods.webpSrc;
 
-mixin image(src, alt)
+mixin image(src, alt, w, h)
 	figure.thumb__item
 		.thumb__overlay
 			svg.thumb__overlay__svg(width='14' height='14' viewbox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg')
 				path(d='M0 7H14M7 0L7 14' stroke='white' stroke-width='2')
 
-		img.thumb__image(width="260" height="176" alt=alt data-pre=src data-pre-webp=`${webpSrc(src)}`)
+		img.thumb__image.gallery__image(width="260" height="176" alt=alt data-pre=src data-pre-webp=`${webpSrc(src)}` data-w=w data-h=h)
 
 .thumb
 	.thumb__wrapper
 		each image in data.images 
-			+image(image.src, image.title)
+			+image(image.src, image.title, image.width, image.height)

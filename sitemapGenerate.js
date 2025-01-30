@@ -21,7 +21,7 @@ const links = imagePaths.map((imgPath) => {
 		priority: 0.5,
 		img: [
 			{
-				url: 'https://example.com/' + imgPath,
+				url: 'https://vi-k.com/' + imgPath,
 			},
 		],
 	};
@@ -29,7 +29,7 @@ const links = imagePaths.map((imgPath) => {
 
 if (links.length > 0) {
 	// Create a stream to write to
-	const stream = new SitemapStream({ hostname: 'https://example.com' });
+	const stream = new SitemapStream({ hostname: 'https://vi-k.com' });
 
 	// Return a promise that resolves with XML string
 	streamToPromise(Readable.from(links).pipe(stream))

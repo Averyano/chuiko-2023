@@ -10,11 +10,11 @@ export default class Preloader extends Component {
 			element: '.preloader',
 			elements: {
 				loadingbar: '.preloader__loadingbar',
+				loadingnumber: '.preloader__loadingnumber',
 				images: document.querySelectorAll('[data-pre]'),
 				main: document.querySelector('.preloader__bg--main'),
 				overlay: document.querySelector('.preloader__bg--overlay'),
 				container: '.preloader__logo__svg__container',
-				stroke: '.preloader__svg--stroke',
 				fill: '.preloader__svg--filled',
 				thumbWrapper: document.querySelector('.thumb__wrapper'),
 				thumbItems: document.querySelectorAll('.thumb__item'),
@@ -78,10 +78,11 @@ export default class Preloader extends Component {
 
 	animateLine(number) {
 		const numberPercent = number * 100;
-		GSAP.to(this.elements.fill, {
-			clipPath: `polygon(0% 0%, ${numberPercent}% 0%, ${numberPercent}% 100%, 0% 100%)`,
-			ease: 'out.expo',
-			duration: 1.5,
+		this.elements.loadingnumber.innerHTML = `${Math.round(numberPercent)}%`;
+		GSAP.to(this.elements.loadingbar, {
+			scaleX: number,
+			duration: 1,
+			ease: 'power4.out',
 		});
 	}
 
@@ -118,30 +119,6 @@ export default class Preloader extends Component {
 			NodeEmitter.emit('showMenu');
 		}, 2000);
 
-		GSAP.fromTo(
-			this.elements.stroke,
-			{
-				strokeDashoffset: 1000,
-			},
-			{
-				strokeDashoffset: 0,
-				opacity: 1,
-				duration: 3,
-				ease: 'out.expo',
-			},
-			0
-		);
-
-		GSAP.to(
-			this.elements.stroke,
-			{
-				strokeDashoffset: -1000,
-				duration: 3,
-				ease: 'out.expo',
-			},
-			'>'
-		);
-
 		// GSAP.set(this.elements.container, { opacity: 1 }, 0);
 	}
 
@@ -152,11 +129,11 @@ export default class Preloader extends Component {
 		});
 
 		this.timeline
-			.fromTo(
-				this.elements.thumbWrapper,
-				{ yPercent: 100, opacity: 0 },
-				{ yPercent: 0, opacity: 1, duration: 0.25, ease: 'out.expo' }
-			)
+			// .fromTo(
+			// 	this.elements.thumbWrapper,
+			// 	{ yPercent: 100, opacity: 0 },
+			// 	{ yPercent: 0, opacity: 1, duration: 0.25, ease: 'out.expo' }
+			// )
 			.fromTo(
 				this.element,
 				{
@@ -164,25 +141,31 @@ export default class Preloader extends Component {
 				},
 				{
 					opacity: 0,
-					duration: 0.5,
-					ease: 'power4.out',
-				}
-			)
-			.fromTo(
-				this.elements.thumbItems,
-				{ yPercent: 100, opacity: 0 },
-				{
-					yPercent: 0,
-					opacity: 1,
-					duration: 1.5,
-					stagger: 0.05,
-					ease: 'power4.out',
+					duration: 1.3,
+					ease: 'expo.out',
+					onStart: () => {
+						this.element.style.display = 'flex';
+					},
 					onComplete: () => {
-						NodeEmitter.emit('showMenu');
-						this.destroy();
+						this.element.style.display = 'none';
 					},
 				}
 			);
+		// .fromTo(
+		// 	this.elements.thumbItems,
+		// 	{ yPercent: 100, opacity: 0 },
+		// 	{
+		// 		yPercent: 0,
+		// 		opacity: 1,
+		// 		duration: 1.5,
+		// 		stagger: 0.05,
+		// 		ease: 'power4.out',
+		// 		onComplete: () => {
+		// 			NodeEmitter.emit('showMenu');
+		// 			this.destroy();
+		// 		},
+		// 	}
+		// );
 	}
 
 	/**
@@ -284,7 +267,7 @@ export default class Preloader extends Component {
 	destroy() {
 		this.timeline.kill();
 
-		this.element.parentNode.removeChild(this.element);
+		// this.element.parentNode.removeChild(this.element);
 	}
 
 	onResize() {}

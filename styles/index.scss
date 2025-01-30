@@ -11,6 +11,7 @@
 @import './base/base';
 
 @import './layout/preloader';
+@import './layout/canvas';
 @import './layout/navigation';
 @import './layout/navigation-mobile';
 @import './layout/navigation-item';
@@ -21,4 +22,4 @@
 @import './layout/loading-icon';
 
 @import './pages/home';
-// @import './pages/notfound';
+@import './pages/notfound';

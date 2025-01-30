@@ -9,11 +9,15 @@
 	text-rendering: optimizeLegibility;
 	font-display: swap;
 }
-@font-face {
-	font-family: 'Kharkiv Tone';
-	src: url('fonts/Kharkiv-Tone.ttf') format('truetype'); /* Safari, Android, iOS */
-	font-style: normal;
-	font-weight: normal;
-	text-rendering: optimizeLegibility;
-	font-display: swap;
-}
+// @font-face {
+// 	font-family: 'Kharkiv Tone';
+// 	src: url('fonts/Kharkiv-Tone.ttf') format('truetype'); /* Safari, Android, iOS */
+// 	font-style: normal;
+// 	font-weight: normal;
+// 	text-rendering: optimizeLegibility;
+// 	font-display: swap;
+// }
+
+
+@import './../node_modules/@fontsource/inter/400.css';
+@import './../node_modules/@fontsource/inter/700.css';

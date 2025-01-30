@@ -18,9 +18,10 @@
 .cover__wrapper {
 	display: flex;
 	flex-direction: column;
-	max-width: 100vw;
+	width: 100vw;
 	height: 100%;
 	justify-content: flex-end;
+	opacity: 1;
 }
 
 .cover__logo {
@@ -41,7 +42,7 @@
 	position: absolute;
 	top: 0;
 	left: 0;
-	filter: blur(40px);
+	// filter: blur(40px);
 	z-index: -1;
-	opacity: 0;
+	// opacity: 0;
 }

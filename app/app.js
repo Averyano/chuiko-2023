@@ -1,21 +1,23 @@
 import GlobalHandler from './classes/GlobalHandler';
 import NodeEmitter from './classes/NodeEmitter';
 
+import Experience from './components/Canvas/Experience';
 import Navigation from './components/Navigation';
 import Loader from './components/@avery-loader/Loader';
 
 import HomePage from './pages/Home';
 
 import { debounce } from './utils/utils';
-import { checkWebpSupport } from './utils/utils';
-
+import { checkWebpSupport, requestIdleCallbackPolyfill } from './utils/utils';
+requestIdleCallbackPolyfill();
 import NotFound from './pages/NotFound';
 import normalizeWheel from 'normalize-wheel';
 
 class App {
 	constructor() {
 		this.isCreated = false;
-
+		this.experience = null;
+		window.isMobile = window.innerWidth < 768;
 		this.create();
 	}
 
@@ -58,6 +60,18 @@ class App {
 				GlobalHandler.handleCreate(); // Run create() on each page
 				GlobalHandler.handleResize(); // Runs onResize() on each component
 			},
+			onPreloaded: () => {
+				console.log('%c Preloaded');
+				if (this.loader.template === 'home') {
+					document.body.classList.add('refresh');
+
+					if (!this.experience) this.experience = new Experience('.webgl');
+					else
+						this.experience.updateImages(() => {
+							// this.show();
+						});
+				}
+			},
 		});
 		this.loader.on('scrollTo', (e) => {
 			if (this.scroll) this.scroll.scrollTo(e);
@@ -69,7 +83,7 @@ class App {
 		GlobalHandler.handleResize(); // Runs onResize() on each component
 
 		if (this.loader.template === 'home') {
-			// this.experience = new Experience('.webgl');
+			this.experience = new Experience('.webgl');
 			this.loader.preloader.createLoader('home');
 		}
 
@@ -113,11 +127,19 @@ class App {
 
 	onPreloaded() {
 		console.log('%c Preloaded');
-
 		if (this.loader.template === 'home') {
-			this.home.components.gallery.create(
-				this.loader.preloader.elements.thumbItems
-			);
+			const maxWidth = document
+				.querySelector('.main__image--w')
+				.getBoundingClientRect().width;
+			document.querySelector('.nav__wrapper').style.maxWidth = `${maxWidth}px`;
+			// this.home.components.gallery.create(
+			// 	this.loader.preloader.elements.thumbItems
+			// );
+			if (!this.experience) this.experience = new Experience('.webgl');
+			else
+				this.experience.updateImages(() => {
+					// this.show();
+				});
 
 			this.loader.preloader.hide();
 			this.show();
@@ -162,42 +184,39 @@ class App {
 	}
 
 	onTouchDown(event) {
-		if (
-			this.home.components.gallery &&
-			this.home.components.gallery.onTouchDown
-		) {
-			this.home.components.gallery.onTouchDown(event);
+		if (this.experience && this.experience.onTouchDown) {
+			// if (this.touchClassCheck(event)) return;
+			this.experience.onTouchDown(event);
 		}
 	}
 
 	onTouchMove(event) {
-		if (
-			this.home.components.gallery &&
-			this.home.components.gallery.onTouchMove
-		) {
-			this.home.components.gallery.onTouchMove(event);
+		if (this.experience && this.experience.onTouchMove) {
+			this.experience.onTouchMove(event);
 		}
 	}
 
 	onTouchUp(event) {
-		if (
-			this.home.components.gallery &&
-			this.home.components.gallery.onTouchUp
-		) {
-			this.home.components.gallery.onTouchUp(event);
+		if (this.experience && this.experience.onTouchUp) {
+			// if (this.touchClassCheck(event)) return;
+			this.experience.onTouchUp(event);
 		}
 	}
 
 	onWheel(event) {
 		const normalizedWheel = normalizeWheel(event);
 
-		if (this.home.components.gallery && this.home.components.gallery.onWheel) {
-			this.home.components.gallery.onWheel(normalizedWheel);
+		if (this.experience && this.experience.onWheel) {
+			this.experience.onWheel(normalizedWheel);
 		}
 	}
 
 	onResize() {
 		window.isMobile = window.innerWidth < 768;
+		const maxWidth = document
+			.querySelector('.main__image--w')
+			.getBoundingClientRect().width;
+		document.querySelector('.nav__wrapper').style.maxWidth = `${maxWidth}px`;
 
 		GlobalHandler.handleResize();
 	}

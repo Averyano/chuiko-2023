@@ -1,14 +1,28 @@
 .thumb {
 	flex-basis: 10%; /* Adjust these values as necessary */
+
+
+	@include media('<desktop') {
+		flex-basis: 114px;
+		max-height: 114px;
+	}
+	@include media('<phone') {
+		flex-basis: 96px;
+		max-height: 96px;
+	}
 }
 .thumb__wrapper {
 	display: flex;
-	padding: 6px;
-	opacity: 0;
+	padding: 2px;
+	// opacity: 0;
 	visibility: visible;
 
 	z-index: z('content');
 	cursor: pointer;
+
+	@include media('>phone') {
+		padding: 6px;
+	}
 }
 
 .thumb__item {
@@ -19,7 +33,19 @@
 	min-width: 260px;
 
 	margin: 6px;
-	opacity: 0;
+	// opacity: 0;
+	@include media('<desktop') {
+		width: 130px;
+		height: auto;
+		min-width: 130px;
+	}
+
+	@include media('<phone') {
+		width: 130px;
+		height: auto;
+		min-width: 130px;
+		margin: 2px;
+	}
 }
 
 .thumb__overlay__svg {

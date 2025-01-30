@@ -2,7 +2,7 @@ uniform sampler2D uTexture;
 uniform vec2 uResolution; // 1, 1
 uniform vec2 uZoomScale; // 1, 1
 uniform vec2 uImageRes; // tex.source.data.width & height
-
+uniform float uScrollVelocity;
 uniform vec2 uScale;
 uniform vec2 uOffset;
 uniform vec2 uMouse;

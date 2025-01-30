@@ -5,13 +5,18 @@
 	max-height: 70%;
 	padding: 0 12px;
 
-	z-index: z('content');
-	position: relative;
-
-	@include media('<phone') {
+	@include media('<desktop') {
 		flex-basis: 75%;
 		max-height: 75%;
 	}
+
+	z-index: z('content');
+	position: relative;
+
+	// @include media('<phone') {
+	// 	flex-basis: 75%;
+	// 	max-height: 75%;
+	// }
 }
 .main__wrapper {
 	@extend %center;
@@ -26,12 +31,26 @@
 
 	position: relative;
 	height: 100%;
-	opacity: 0;
+	// opacity: 0;
 	padding-top: 6px;
 	z-index: z('content');
+
+	&--w {
+		display: flex;
+		// justify-content: flex-end;
+		// align-items: flex-end;
+	}
+
+	&--h {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+	}
 }
 .main__image {
 	max-height: 100%;
 	max-width: 100%;
+	width: auto;
 	object-fit: contain;
 }

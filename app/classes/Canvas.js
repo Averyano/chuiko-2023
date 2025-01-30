@@ -31,8 +31,9 @@ export default class Canvas extends Component {
 			antialias: true,
 		});
 
-		this.renderer.setClearColor('rgb(255, 252, 247)');
-		// this.renderer.setClearColor(0x050505);
+		// this.renderer.setClearColor('rgb(255, 255, 255)');
+		this.renderer.setClearColor(0x050505);
+
 
 		this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 		this.renderer.setSize(this.sizes.width, this.sizes.height);
@@ -46,6 +47,7 @@ export default class Canvas extends Component {
 	}
 
 	destroy() {
+		console.log('Canvas Class Destroy');
 		// Traverse scene
 
 		this.scene.traverse((child) => {
@@ -54,6 +56,7 @@ export default class Canvas extends Component {
 					const value = child.material[key];
 
 					if (value && typeof value.dispose === 'function') {
+						console.log(value);
 						value.dispose();
 					}
 				}

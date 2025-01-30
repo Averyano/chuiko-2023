@@ -12,4 +12,8 @@ main {
 .home {
 	height: 100vh;
 	overflow: hidden;
+
+	@include media('<=tablet') {
+		height: 90vh;
+	}
 }

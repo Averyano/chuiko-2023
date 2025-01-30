@@ -1,5 +1,5 @@
 .nav__item {
-	max-width: 250px;
+	max-width: 100%;
 	// min-width: 120px;
 }
 .nav__item__title {
@@ -12,6 +12,7 @@
 
 	a {
 		@extend %link--hidden;
+		min-height: 18px;
 	}
 
 	& span {

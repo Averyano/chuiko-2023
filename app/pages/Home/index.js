@@ -1,6 +1,6 @@
 import GSAP from 'gsap';
 import CoverSection from './CoverSection';
-import Gallery from '../../components/Gallery';
+// import Gallery from '../../components/Gallery';
 
 import Page from '../../classes/Page';
 
@@ -27,7 +27,7 @@ export default class HomePage extends Page {
 		if (!this.isCreated) {
 			this.components = {
 				cover: new CoverSection(),
-				gallery: new Gallery(this.isWebpSupported),
+				// gallery: new Gallery(this.isWebpSupported),
 			};
 			this.isCreated = true;
 		}
