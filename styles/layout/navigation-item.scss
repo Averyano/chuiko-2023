@@ -1,6 +1,12 @@
 .nav__item {
 	max-width: 100%;
 	// min-width: 120px;
+
+	@include media('>laptop', '<desktop') {
+		&:nth-child(3) {
+			display: none;
+		}
+	}
 }
 .nav__item__title {
 	margin-bottom: 4px;

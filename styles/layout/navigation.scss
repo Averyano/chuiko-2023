@@ -38,6 +38,9 @@ nav {
 	opacity: 0;
 	margin: auto;
 
+	@include media('<desktop', '>tablet') {
+		padding: 24px 40px;
+	}
 	@include media('<laptop') {
 		min-height: 0rem;
 	}
