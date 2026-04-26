@@ -80,6 +80,7 @@ export default class Experience extends Canvas {
 		});
 
 		this.mouse = new THREE.Vector2();
+		this.hoverRaycaster = new THREE.Raycaster();
 		this.touch = {
 			start: 0,
 			end: 0,
@@ -225,9 +226,6 @@ export default class Experience extends Canvas {
 		this.raycaster.update();
 
 		if (this.raycaster.currentIntersect) {
-			// this.raycaster.currentIntersect.object.material.uniforms.uMouse.value =
-			// this.mouse;
-			// this.gallery.setActive(this.raycaster.currentIntersect.object);
 			this.dbg4.innerHTML = this.raycaster.currentIntersect.object.uuid;
 			this.intersectId.current = this.raycaster.currentIntersect.object.uuid;
 
@@ -235,6 +233,15 @@ export default class Experience extends Canvas {
 				this.intersectId.previous = this.intersectId.current;
 				this.gallery.setActive(null, this.intersectId.current);
 			}
+		}
+
+		// Mouse-hover highlight — set uDarken=1 on whichever thumbnail the cursor is over
+		if (!window.isMobile && this.gallery && this.gallery.items.length) {
+			this.hoverRaycaster.setFromCamera(this.mouse, this.camera.el);
+			const hits = this.hoverRaycaster.intersectObjects(
+				this.gallery.items.map((i) => i.mesh)
+			);
+			this.gallery.setHovered(hits.length > 0 ? hits[0].object.uuid : null);
 		}
 		// console.log(this.elapsedTime);
 
@@ -307,11 +314,9 @@ export default class Experience extends Canvas {
 
 	onResize() {
 		if (window.isMobile) {
-			return (this.mouse = {
-				x: 0,
-				y: -0.75,
-			});
+			this.mouse = { x: 0, y: -0.75 };
 		}
+
 		// Update sizes
 		super.onResize();
 
@@ -322,19 +327,24 @@ export default class Experience extends Canvas {
 		this.renderer.setSize(this.sizes.width, this.sizes.height);
 		this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+		// Resize composer render targets to match new viewport — prevents blur on grow
+		if (this.composer) {
+			this.composer.setSize(this.sizes.width, this.sizes.height);
+		}
+
 		// Update elements
 		if (this.gallery) {
 			this.gallery.sizes = this.sizes;
 			if (this.gallery.onResize) this.gallery.onResize();
-		} //
+		}
 	}
 
 	addEventListeners() {
-		// Handle mouse events
-		// window.addEventListener('mousemove', (event) => {
-		// 	this.mouse.x = (event.clientX / this.sizes.width) * 2 - 1;
-		// 	this.mouse.y = -(event.clientY / this.sizes.height) * 2 + 1;
-		// });
+		window.addEventListener('pointermove', (e) => {
+			if (window.isMobile) return;
+			this.mouse.x = (e.clientX / this.sizes.width) * 2 - 1;
+			this.mouse.y = -(e.clientY / this.sizes.height) * 2 + 1;
+		});
 
 		// if (!window.isMobile)
 		// 	window.addEventListener('pointermove', (e) => {

@@ -7,7 +7,7 @@ import Loader from './components/@avery-loader/Loader';
 
 import HomePage from './pages/Home';
 
-import { debounce } from './utils/utils';
+import { debounce, debounceMs } from './utils/utils';
 import { checkWebpSupport, requestIdleCallbackPolyfill } from './utils/utils';
 requestIdleCallbackPolyfill();
 import NotFound from './pages/NotFound';
@@ -170,7 +170,7 @@ class App {
 	}
 
 	addEventListeners() {
-		window.addEventListener('resize', debounce(this.onResize.bind(this))); // runs on the next frame
+		window.addEventListener('resize', debounceMs(this.onResize.bind(this), 250));
 
 		window.addEventListener('wheel', this.onWheel.bind(this));
 
@@ -235,6 +235,8 @@ class App {
 		document.querySelector('.nav__wrapper').style.maxWidth = `${maxWidth}px`;
 
 		GlobalHandler.handleResize();
+
+		if (this.experience) this.experience.onResize();
 	}
 }
 

@@ -39,7 +39,7 @@ const distance = (x1, y1, x2, y2) => {
 const getRandomFloat = (min, max) =>
 	(Math.random() * (max - min) + min).toFixed(2);
 
-// Debounce
+// Debounce (rAF-based, ~2 frames)
 const debounce = (func) => {
 	let timer;
 	return function (event) {
@@ -49,8 +49,16 @@ const debounce = (func) => {
 				func(event);
 			});
 		});
-		// if (timer) clearTimeout(timer);
-		// timer = setTimeout(func, 100, event);
+	};
+};
+
+// Time-based debounce — waits `delay` ms after the last call before firing.
+// Use for resize handlers where DOM reflow must complete before measuring bounds.
+const debounceMs = (fn, delay = 250) => {
+	let timer;
+	return function (...args) {
+		clearTimeout(timer);
+		timer = setTimeout(() => fn.apply(this, args), delay);
 	};
 };
 
@@ -103,6 +111,7 @@ export {
 	distance,
 	getRandomFloat,
 	debounce,
+	debounceMs,
 	insertAfter,
 	checkWebpSupport,
 	requestIdleCallbackPolyfill,

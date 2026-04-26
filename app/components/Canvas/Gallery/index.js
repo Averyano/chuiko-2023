@@ -87,6 +87,7 @@ export default class Gallery extends Component {
 
 		this.isScrollingToItem = false;
 		this._scrollTween = null;
+		this.hoveredUuid = null;
 
 		this.metricsLength = 0;
 		this.metricsTargetBreakdown = -1;
@@ -239,6 +240,9 @@ export default class Gallery extends Component {
 
 			item.bounds = imageBounds[i].bounds;
 			item.mesh.scale.set(item.bounds.width, item.bounds.height, 1);
+			if (item.mesh.material.uniforms.uResolution) {
+				item.mesh.material.uniforms.uResolution.value.set(item.bounds.width, item.bounds.height);
+			}
 			item.extraY = 0;
 
 			item.getParams();
@@ -447,6 +451,20 @@ export default class Gallery extends Component {
 		if (this.imageBounds) {
 			this.getBounds().then(() => {
 				this.updateItems(this.imageBounds);
+
+				// Reposition and rescale the main preview mesh to match the new DOM bounds
+				if (this.mainItems[0] && this.wBounds) {
+					const b = this.wBounds;
+					this.mainItems[0].mesh.scale.set(b.width, b.height, 1);
+					this.mainItems[0].mesh.position.set(
+						(b.left + b.right) / 2 - this.sizes.width / 2,
+						-((b.top + b.bottom) / 2) + this.sizes.height / 2,
+						-1.5
+					);
+					if (this.mainItems[0].mesh.material.uniforms.uResolution) {
+						this.mainItems[0].mesh.material.uniforms.uResolution.value.set(b.width, b.height);
+					}
+				}
 
 				requestIdleCallback(() => {
 					this.isRescaling = false;
@@ -667,6 +685,12 @@ export default class Gallery extends Component {
 			}
 			this.mainItems[0].mesh.material.uniforms.uDarken.value = 1;
 			item.mesh.material.uniforms.uDarken.value = 1;
+
+			// Re-apply hover highlight that the bulk reset just cleared
+			if (this.hoveredUuid && this.hoveredUuid !== id) {
+				const hovered = this.items.find((i) => i.mesh.uuid === this.hoveredUuid);
+				if (hovered) hovered.mesh.material.uniforms.uDarken.value = 1;
+			}
 		}
 
 		if (!item || !item.fullSrc) return;
@@ -697,6 +721,25 @@ export default class Gallery extends Component {
 
 		this.previous = item;
 		clearTimeout(this.timer);
+	}
+
+	setHovered(uuid) {
+		if (uuid === this.hoveredUuid) return;
+
+		// Restore the previously hovered item if it isn't the raycaster-active item
+		if (this.hoveredUuid) {
+			const prev = this.items.find((i) => i.mesh.uuid === this.hoveredUuid);
+			if (prev && prev !== this.previous) {
+				prev.mesh.material.uniforms.uDarken.value = 0.5;
+			}
+		}
+
+		this.hoveredUuid = uuid;
+
+		if (uuid) {
+			const item = this.items.find((i) => i.mesh.uuid === uuid);
+			if (item) item.mesh.material.uniforms.uDarken.value = 1;
+		}
 	}
 
 	setInactive(canvas) {
