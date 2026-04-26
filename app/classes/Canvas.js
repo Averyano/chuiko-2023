@@ -31,9 +31,8 @@ export default class Canvas extends Component {
 			antialias: true,
 		});
 
-		// this.renderer.setClearColor('rgb(255, 255, 255)');
+		// this.renderer.setClearColor('#e0e1dd'); // #e0e1dd
 		this.renderer.setClearColor(0x050505);
-
 
 		this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 		this.renderer.setSize(this.sizes.width, this.sizes.height);

@@ -15,7 +15,7 @@ export default class Preloader extends Component {
 				main: document.querySelector('.preloader__bg--main'),
 				overlay: document.querySelector('.preloader__bg--overlay'),
 				container: '.preloader__logo__svg__container',
-				fill: '.preloader__svg--filled',
+				// fill: '.preloader__svg--filled',
 				thumbWrapper: document.querySelector('.thumb__wrapper'),
 				thumbItems: document.querySelectorAll('.thumb__item'),
 			},

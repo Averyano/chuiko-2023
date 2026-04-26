@@ -7,16 +7,22 @@
 
 	top: 2vh;
 	right: 2vh;
+	border-radius: 6px;
 
 	cursor: pointer;
 	user-select: none;
 
 	z-index: 99;
-
-	@include media('>laptop') {
-		visibility: hidden;
-		opacity: 0;
+	@include media('>tablet') {
+		&:hover {
+			background: #111;
+		}
 	}
+
+	// @include media('>laptop') {
+	// 	visibility: hidden;
+	// 	opacity: 0;
+	// }
 }
 .nav__menu__line {
 	position: absolute;
@@ -73,11 +79,6 @@
 	overflow-y: auto;
 
 	& .nav__item {
-		opacity: 0;
-	}
-
-	@include media('>laptop') {
-		visibility: hidden;
 		opacity: 0;
 	}
 }

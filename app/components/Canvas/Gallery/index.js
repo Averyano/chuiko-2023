@@ -393,20 +393,10 @@ export default class Gallery extends Component {
 			if (!this.isScrollingToItem) {
 				item.extraX += this.speed.current;
 
-				if (this.direction === 1) {
-					if (
-						item.mesh.position.x >
-						this.maxWidth - item.bounds.width - this.sizes.width
-					) {
-						item.extraX -= this.maxWidth;
-					}
-				} else if (this.direction === -1) {
-					if (
-						item.mesh.position.x <
-						-this.maxWidth + item.bounds.width + this.sizes.width
-					) {
-						item.extraX += this.maxWidth;
-					}
+				if (item.mesh.position.x > this.maxWidth - item.bounds.width - this.sizes.width) {
+					item.extraX -= this.maxWidth;
+				} else if (item.mesh.position.x < -this.maxWidth + item.bounds.width + this.sizes.width) {
+					item.extraX += this.maxWidth;
 				}
 			}
 		});
@@ -533,40 +523,25 @@ export default class Gallery extends Component {
 	}
 
 	onKeyDown(e) {
-		if (this.isForwarding) return;
-		if (!this.isKeyDown) {
-			this.time.start = Date.now();
-			this.isKeyDown = true;
-		}
+		if (this.isForwarding || e.repeat) return;
 
-		this.time.current = Date.now();
-		let diff = 100 * ((this.time.current - this.time.start) / 1000);
-
-		this.pauseRaf();
-
-		if (e.code === 'ArrowLeft' || e.keyCode === 37 || e.code === 'ArrowUp' || e.keyCode === 38) {
+		if (e.code === 'ArrowLeft' || e.keyCode === 37) {
 			e.preventDefault();
-			this.direction = -1;
-			this.speed.target -= diff;
-		}
-		if (e.code === 'ArrowRight' || e.keyCode === 39 || e.code === 'ArrowDown' || e.keyCode === 40) {
+			this._navigateByKey(-1);
+		} else if (e.code === 'ArrowRight' || e.keyCode === 39) {
 			e.preventDefault();
-			this.direction = 1;
-			this.speed.target += diff;
+			this._navigateByKey(1);
 		}
 	}
 
-	onKeyUp(e) {
-		this.time = {
-			start: null,
-			current: null,
-			end: null,
-		};
-
-		this.isKeyDown = false;
-
-		// this.speed.target = 0;
+	_navigateByKey(dir) {
+		if (!this.items.length) return;
+		const currentIndex = this.previous ? this.items.indexOf(this.previous) : 0;
+		const nextIndex = (currentIndex + dir + this.items.length) % this.items.length;
+		this.scrollToItem(this.items[nextIndex]);
 	}
+
+	onKeyUp(e) {}
 
 	destroy() {
 		map(this.items, (item) => {
@@ -754,22 +729,27 @@ export default class Gallery extends Component {
 	scrollToItem(item) {
 		if (!item || !this.items.length || !this.isBoundReady) return;
 
-		// Show the preview immediately so the user gets instant feedback
+		// Kill any in-flight tween first so extraX values are stable before we snapshot
+		if (this._scrollTween) this._scrollTween.kill();
+
+		// Show the preview immediately
 		this.setActive(null, item.mesh.uuid);
 
-		// Distance needed to center this item under the raycaster (world x = 0)
-		let delta = -item.mesh.position.x;
+		// Compute current world x directly from extraX — mesh.position.x may be
+		// stale by one frame if a previous tween was just killed
+		const domCenter = (item.bounds.left + item.bounds.right) / 2;
+		const currentPosX = -domCenter + this.sizes.width / 2 + item.extraX;
+
+		// Distance needed to bring the item to world x = 0 (raycaster center)
+		let delta = -currentPosX;
 
 		// Always take the shorter arc around the infinite loop
 		if (this.maxWidth > 0 && Math.abs(delta) > this.maxWidth / 2) {
 			delta = delta > 0 ? delta - this.maxWidth : delta + this.maxWidth;
 		}
 
-		// Snapshot all extraX values at the moment of click
+		// Snapshot all extraX values now (after kill, before tween starts)
 		const startX = this.items.map((i) => i.extraX);
-
-		// Kill any in-flight scroll-to tween
-		if (this._scrollTween) this._scrollTween.kill();
 
 		this.isScrollingToItem = true;
 		this.speed.current = 0;
@@ -787,7 +767,21 @@ export default class Gallery extends Component {
 			},
 			onComplete: () => {
 				this.isScrollingToItem = false;
+				// Normalize extraX for all items — the tween may have displaced items
+				// past the wrap boundary by more than one maxWidth
+				this._normalizeExtraX();
 			},
+		});
+	}
+
+	_normalizeExtraX() {
+		this.items.forEach((item) => {
+			const domCenter = (item.bounds.left + item.bounds.right) / 2;
+			const wrapRight = this.maxWidth - item.bounds.width - this.sizes.width;
+			const wrapLeft = -this.maxWidth + item.bounds.width + this.sizes.width;
+			let posX = -domCenter + this.sizes.width / 2 + item.extraX;
+			while (posX > wrapRight) { item.extraX -= this.maxWidth; posX -= this.maxWidth; }
+			while (posX < wrapLeft)  { item.extraX += this.maxWidth; posX += this.maxWidth; }
 		});
 	}
 }

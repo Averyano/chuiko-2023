@@ -1,13 +1,17 @@
 .main {
-	flex-basis: 70%;
+	flex-basis: 85%;
 
 	max-width: 100vw;
-	max-height: 70%;
-	padding: 0 12px;
+	max-height: 85%;
+	padding: 2px 12px 0;
+
+	@include media('>phone') {
+		padding-top: 6px;
+	}
 
 	@include media('<desktop') {
-		flex-basis: 75%;
-		max-height: 75%;
+		flex-basis: 85%;
+		max-height: 85%;
 	}
 
 	z-index: z('content');

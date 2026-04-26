@@ -128,13 +128,6 @@ class App {
 	onPreloaded() {
 		console.log('%c Preloaded');
 		if (this.loader.template === 'home') {
-			const maxWidth = document
-				.querySelector('.main__image--w')
-				.getBoundingClientRect().width;
-			document.querySelector('.nav__wrapper').style.maxWidth = `${maxWidth}px`;
-			// this.home.components.gallery.create(
-			// 	this.loader.preloader.elements.thumbItems
-			// );
 			if (!this.experience) this.experience = new Experience('.webgl');
 			else
 				this.experience.updateImages(() => {
@@ -229,10 +222,6 @@ class App {
 
 	onResize() {
 		window.isMobile = window.innerWidth < 768;
-		const maxWidth = document
-			.querySelector('.main__image--w')
-			.getBoundingClientRect().width;
-		document.querySelector('.nav__wrapper').style.maxWidth = `${maxWidth}px`;
 
 		GlobalHandler.handleResize();
 
