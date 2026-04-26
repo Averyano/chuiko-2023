@@ -19,9 +19,7 @@
 	z-index: z('content');
 	cursor: pointer;
 
-	@include media('>phone') {
-		padding: 6px;
-	}
+	padding: 6px;
 }
 
 .thumb__item {
@@ -43,7 +41,6 @@
 		width: 130px;
 		height: auto;
 		min-width: 130px;
-		margin: 2px;
 	}
 }
 
