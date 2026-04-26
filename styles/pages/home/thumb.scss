@@ -1,7 +1,6 @@
 .thumb {
 	flex-basis: 10%; /* Adjust these values as necessary */
 
-
 	@include media('<desktop') {
 		flex-basis: 114px;
 		max-height: 114px;
@@ -13,7 +12,7 @@
 }
 .thumb__wrapper {
 	display: flex;
-	padding: 2px;
+	// padding: 2px;
 	// opacity: 0;
 	visibility: visible;
 
@@ -31,8 +30,8 @@
 	height: 176px;
 	width: 260px;
 	min-width: 260px;
-
-	margin: 6px;
+	margin-left: -1px;
+	// margin: 6px;
 	// opacity: 0;
 	@include media('<desktop') {
 		width: 130px;

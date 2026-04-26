@@ -112,14 +112,20 @@ export default class Gallery extends Component {
 				// Load all textures in the correct order
 				const loadTexturesPromises = this.imageBounds.map((obj, index) => {
 					return new Promise((resolve) => {
-						
 						this.textureLoader.load(obj.src, (texture) => {
 							const aspect = threeCover(
 								texture,
 								obj.bounds.width / obj.bounds.height
 							);
 
-							resolve({ obj, texture, aspect, index, dataW: obj.dataW, dataH: obj.dataH });
+							resolve({
+								obj,
+								texture,
+								aspect,
+								index,
+								dataW: obj.dataW,
+								dataH: obj.dataH,
+							});
 						});
 					});
 				});
@@ -175,42 +181,71 @@ export default class Gallery extends Component {
 				// });
 
 				// Create a mesh for each image and add it to the scene
-				Promise.all(loadTexturesPromises).then((loadedData) => {
-					loadedData.forEach(({ obj, texture, aspect, index, dataW, dataH }) => {
-						const item = new GalleryItem({
-							obj,
-							texture,
-							aspect,
-							sizes: this.sizes,
-							uniforms: this.uniforms,
-							dataW: dataW,
-							dataH: dataH,
-						});
-
-						// Add to scene
-						this.scene.add(item.mesh);
-						this.meshes.push(item.mesh);
-						// Also to arrays for later usage
-						this.items.push(item);
+				const filmPromise = new Promise((resolve) => {
+					this.textureLoader.load('/images/film.png', (texture) => {
+						this.filmTexture = texture;
+						resolve(texture);
 					});
-
-					if (this.items.length === imageBounds.length) {
-						this.isReady = true;
-						res();
-						this.scene.traverse((obj) => (obj.frustumCulled = false)); // Workaround to avoid lag, renders all objects at all times. Not the best performance
-						this.onResize();
-						this.preloadFullResTextures();
-					} // fin
 				});
 
+				Promise.all([Promise.all(loadTexturesPromises), filmPromise]).then(
+					([loadedData, filmTexture]) => {
+						loadedData.forEach(
+							({ obj, texture, aspect, index, dataW, dataH }) => {
+								const item = new GalleryItem({
+									obj,
+									texture,
+									aspect,
+									sizes: this.sizes,
+									uniforms: this.uniforms,
+									dataW: dataW,
+									dataH: dataH,
+								});
+
+								// Add to scene
+								this.scene.add(item.mesh);
+								this.meshes.push(item.mesh);
+								// Also to arrays for later usage
+								this.items.push(item);
+
+								// Film strip overlay mesh — sits in front of the thumbnail (z=-0.9 vs z=-1)
+								const filmMesh = new THREE.Mesh(
+									new THREE.PlaneGeometry(1, 1),
+									new THREE.MeshBasicMaterial({
+										map: filmTexture,
+										transparent: true,
+										depthWrite: false,
+									})
+								);
+								filmMesh.scale.set(item.bounds.width, item.bounds.height, 1);
+								filmMesh.position.set(
+									item.mesh.position.x,
+									item.mesh.position.y,
+									-0.9
+								);
+								filmMesh.frustumCulled = false;
+								this.scene.add(filmMesh);
+								item.filmMesh = filmMesh;
+							}
+						);
+
+						if (this.items.length === imageBounds.length) {
+							this.isReady = true;
+							res();
+							this.scene.traverse((obj) => (obj.frustumCulled = false)); // Workaround to avoid lag, renders all objects at all times. Not the best performance
+							this.onResize();
+							this.preloadFullResTextures();
+						} // fin
+					}
+				);
+
 				this.isBoundReady = true;
-			
+
 				console.log('BoundReady');
 				console.log(this.items);
 
 				GSAP.set(this.elements.main, { autoAlpha: 0 }); // hides the DOM element @TODO
 				GSAP.set(this.elements.thumb, { autoAlpha: 0 }); // hides the DOM element @TODO
-
 			});
 		});
 	}
@@ -241,7 +276,18 @@ export default class Gallery extends Component {
 			item.bounds = imageBounds[i].bounds;
 			item.mesh.scale.set(item.bounds.width, item.bounds.height, 1);
 			if (item.mesh.material.uniforms.uResolution) {
-				item.mesh.material.uniforms.uResolution.value.set(item.bounds.width, item.bounds.height);
+				item.mesh.material.uniforms.uResolution.value.set(
+					item.bounds.width,
+					item.bounds.height
+				);
+			}
+			if (item.filmMesh) {
+				item.filmMesh.scale.set(item.bounds.width, item.bounds.height, 1);
+				item.filmMesh.position.set(
+					item.mesh.position.x,
+					item.mesh.position.y,
+					-0.9
+				);
 			}
 			item.extraY = 0;
 
@@ -260,7 +306,7 @@ export default class Gallery extends Component {
 		this.wrapperBounds = this.element.getBoundingClientRect();
 		this.wBounds = this.elements.wImg.getBoundingClientRect();
 		this.hBounds = this.elements.hImg.getBoundingClientRect();
-		
+
 		return new Promise((resolve) => {
 			// Create Images Array
 			if (!this.imagesArray) {
@@ -390,12 +436,23 @@ export default class Gallery extends Component {
 			item.update();
 			item.mesh.material.uniforms.uScrollVelocity.value = this.speed.current;
 
+			if (item.filmMesh) {
+				item.filmMesh.position.x = item.mesh.position.x;
+				item.filmMesh.position.y = item.mesh.position.y;
+			}
+
 			if (!this.isScrollingToItem) {
 				item.extraX += this.speed.current;
 
-				if (item.mesh.position.x > this.maxWidth - item.bounds.width - this.sizes.width) {
+				if (
+					item.mesh.position.x >
+					this.maxWidth - item.bounds.width - this.sizes.width
+				) {
 					item.extraX -= this.maxWidth;
-				} else if (item.mesh.position.x < -this.maxWidth + item.bounds.width + this.sizes.width) {
+				} else if (
+					item.mesh.position.x <
+					-this.maxWidth + item.bounds.width + this.sizes.width
+				) {
 					item.extraX += this.maxWidth;
 				}
 			}
@@ -452,7 +509,10 @@ export default class Gallery extends Component {
 						-1.5
 					);
 					if (this.mainItems[0].mesh.material.uniforms.uResolution) {
-						this.mainItems[0].mesh.material.uniforms.uResolution.value.set(b.width, b.height);
+						this.mainItems[0].mesh.material.uniforms.uResolution.value.set(
+							b.width,
+							b.height
+						);
 					}
 				}
 
@@ -476,7 +536,7 @@ export default class Gallery extends Component {
 		/* added in app.js */
 		this.elements.wImg.addEventListener('load', () => {
 			console.log('loaded');
-			this.textureLoader.load((this.elements.wImg.src), ( texture ) => {
+			this.textureLoader.load(this.elements.wImg.src, (texture) => {
 				if (!this.mainItems[0]) return;
 				// in this example we create the material when the texture is loaded
 				this.mainItems[0].mesh.material.uniforms.uTexture.value = texture;
@@ -484,9 +544,7 @@ export default class Gallery extends Component {
 				const bound = this.elements.wImg.getBoundingClientRect();
 				if (this.mainItems.length > 0)
 					this.mainItems[0].mesh.scale.set(bound.width, bound.height, 1);
-
-			})
-
+			});
 		});
 	}
 
@@ -537,7 +595,8 @@ export default class Gallery extends Component {
 	_navigateByKey(dir) {
 		if (!this.items.length) return;
 		const currentIndex = this.previous ? this.items.indexOf(this.previous) : 0;
-		const nextIndex = (currentIndex + dir + this.items.length) % this.items.length;
+		const nextIndex =
+			(currentIndex + dir + this.items.length) % this.items.length;
 		this.scrollToItem(this.items[nextIndex]);
 	}
 
@@ -546,6 +605,11 @@ export default class Gallery extends Component {
 	destroy() {
 		map(this.items, (item) => {
 			this.scene.remove(item.mesh);
+			if (item.filmMesh) {
+				this.scene.remove(item.filmMesh);
+				item.filmMesh.geometry.dispose();
+				item.filmMesh.material.dispose();
+			}
 			item.destroy();
 		});
 		map(this.mainItems, (item) => {
@@ -663,7 +727,9 @@ export default class Gallery extends Component {
 
 			// Re-apply hover highlight that the bulk reset just cleared
 			if (this.hoveredUuid && this.hoveredUuid !== id) {
-				const hovered = this.items.find((i) => i.mesh.uuid === this.hoveredUuid);
+				const hovered = this.items.find(
+					(i) => i.mesh.uuid === this.hoveredUuid
+				);
 				if (hovered) hovered.mesh.material.uniforms.uDarken.value = 1;
 			}
 		}
@@ -673,13 +739,22 @@ export default class Gallery extends Component {
 		this.currentSrc = item.fullSrc;
 
 		const applyTexture = (texture) => {
-			if (!this.mainItems[0] || !texture.image.src.includes(this.currentSrc)) return;
+			if (!this.mainItems[0] || !texture.image.src.includes(this.currentSrc))
+				return;
 			this.mainItems[0].mesh.material.uniforms.uTexture.value = texture;
 			this.mainItems[0].mesh.material.uniforms.uTexture.value.needsUpdate = true;
 			if (item.dataW == 1818) {
-				this.mainItems[0].mesh.scale.set(this.wBounds.width, this.wBounds.height, 1);
+				this.mainItems[0].mesh.scale.set(
+					this.wBounds.width,
+					this.wBounds.height,
+					1
+				);
 			} else {
-				this.mainItems[0].mesh.scale.set(this.hBounds.width, this.hBounds.height, 1);
+				this.mainItems[0].mesh.scale.set(
+					this.hBounds.width,
+					this.hBounds.height,
+					1
+				);
 			}
 		};
 
@@ -780,8 +855,14 @@ export default class Gallery extends Component {
 			const wrapRight = this.maxWidth - item.bounds.width - this.sizes.width;
 			const wrapLeft = -this.maxWidth + item.bounds.width + this.sizes.width;
 			let posX = -domCenter + this.sizes.width / 2 + item.extraX;
-			while (posX > wrapRight) { item.extraX -= this.maxWidth; posX -= this.maxWidth; }
-			while (posX < wrapLeft)  { item.extraX += this.maxWidth; posX += this.maxWidth; }
+			while (posX > wrapRight) {
+				item.extraX -= this.maxWidth;
+				posX -= this.maxWidth;
+			}
+			while (posX < wrapLeft) {
+				item.extraX += this.maxWidth;
+				posX += this.maxWidth;
+			}
 		});
 	}
 }
