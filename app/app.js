@@ -181,6 +181,9 @@ class App {
 		window.addEventListener('touchstart', this.onTouchDown.bind(this));
 		window.addEventListener('touchmove', this.onTouchMove.bind(this));
 		window.addEventListener('touchend', this.onTouchUp.bind(this));
+
+		window.addEventListener('keydown', this.onKeyDown.bind(this));
+		window.addEventListener('keyup', this.onKeyUp.bind(this));
 	}
 
 	onTouchDown(event) {
@@ -204,10 +207,23 @@ class App {
 	}
 
 	onWheel(event) {
+		if (event.ctrlKey) return; // pinch-to-zoom on trackpad — ignore
 		const normalizedWheel = normalizeWheel(event);
 
 		if (this.experience && this.experience.onWheel) {
 			this.experience.onWheel(normalizedWheel);
+		}
+	}
+
+	onKeyDown(event) {
+		if (this.experience && this.experience.onKeyDown) {
+			this.experience.onKeyDown(event);
+		}
+	}
+
+	onKeyUp(event) {
+		if (this.experience && this.experience.onKeyUp) {
+			this.experience.onKeyUp(event);
 		}
 	}
 

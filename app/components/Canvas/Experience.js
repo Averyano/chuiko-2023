@@ -370,40 +370,16 @@ export default class Experience extends Canvas {
 		// 		}
 		// 	});
 
-		// Handle touch events
-		window.addEventListener('touchstart', (event) => {
-			this.isTouch = true;
-			updateTouchPosition(event);
-		});
-
-		window.addEventListener('touchmove', (event) => {
-			if (this.isTouch) {
-				updateTouchPosition(event);
-			}
-		});
-
-		window.addEventListener('touchend', () => {
-			this.isTouch = false;
-		});
-
-		const updateTouchPosition = (event) => {
-			const e = event.changedTouches ? event.changedTouches[0] : event;
-			if (e) {
-				// @TODO
-				// this.speed += -(event.touches[0] / this.sizes.height) + 0.5;
-				this.mouse.x = (e.clientX / this.sizes.width) * 2 - 1;
-				this.mouse.y = -(e.clientY / this.sizes.height) * 2 + 1;
-				this.dbg1.innerHTML = this.mouse.x;
-				this.dbg2.innerHTML = this.mouse.y;
-			}
-		};
 	}
 
-	onWheel({ pixelY }) {
-		this.direction = pixelY > 0 ? 1 : -1;
-		this.velocity += pixelY * 0.1;
+	onWheel({ pixelX, pixelY }) {
+		// Trackpad horizontal swipe (pixelX) takes priority when it's the dominant axis;
+		// mouse wheel or trackpad vertical swipe falls back to pixelY.
+		const delta = Math.abs(pixelX) > Math.abs(pixelY) ? pixelX : pixelY;
+		this.direction = delta > 0 ? 1 : -1;
+		this.velocity += delta * 0.1;
 
-		this.gallery.onWheel(this.direction, pixelY);
+		this.gallery.onWheel(this.direction, delta);
 	}
 
 	onTouchDown(e) {

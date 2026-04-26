@@ -524,12 +524,12 @@ export default class Gallery extends Component {
 
 		this.pauseRaf();
 
-		if (e.code === 'ArrowUp' || e.keyCode === 38) {
+		if (e.code === 'ArrowLeft' || e.keyCode === 37 || e.code === 'ArrowUp' || e.keyCode === 38) {
 			e.preventDefault();
 			this.direction = -1;
 			this.speed.target -= diff;
 		}
-		if (e.code === 'ArrowDown' || e.keyCode === 40) {
+		if (e.code === 'ArrowRight' || e.keyCode === 39 || e.code === 'ArrowDown' || e.keyCode === 40) {
 			e.preventDefault();
 			this.direction = 1;
 			this.speed.target += diff;
