@@ -81,6 +81,7 @@ export default class Experience extends Canvas {
 			end: 0,
 		};
 		this.isTouch = false;
+		this.clickStart = { x: 0, y: 0 };
 
 		this.clock = new THREE.Clock();
 		this.oldElapsedTime = 0;
@@ -386,6 +387,8 @@ export default class Experience extends Canvas {
 		this.isTouch = true;
 
 		this.x.start = e.touches ? e.touches[0].clientX : e.clientX;
+		this.clickStart.x = e.touches ? e.touches[0].clientX : e.clientX;
+		this.clickStart.y = e.touches ? e.touches[0].clientY : e.clientY;
 
 		const values = {
 			x: this.x,
@@ -418,6 +421,11 @@ export default class Experience extends Canvas {
 		this.isTouch = false;
 
 		const x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+		const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+
+		const dx = x - this.clickStart.x;
+		const dy = y - this.clickStart.y;
+		if (Math.sqrt(dx * dx + dy * dy) < 8) this.onPointerClick(x, y);
 
 		this.x.end = x;
 
@@ -426,6 +434,26 @@ export default class Experience extends Canvas {
 		};
 
 		this.gallery.onTouchUp(values);
+	}
+
+	onPointerClick(clientX, clientY) {
+		if (!this.gallery || !this.gallery.items.length) return;
+
+		const ndcX = (clientX / this.sizes.width) * 2 - 1;
+		const ndcY = -(clientY / this.sizes.height) * 2 + 1;
+
+		const clickRay = new THREE.Raycaster();
+		clickRay.setFromCamera(new THREE.Vector2(ndcX, ndcY), this.camera.el);
+
+		const thumbnailMeshes = this.gallery.items.map((i) => i.mesh);
+		const intersects = clickRay.intersectObjects(thumbnailMeshes);
+
+		if (intersects.length > 0) {
+			const hitItem = this.gallery.items.find(
+				(i) => i.mesh === intersects[0].object
+			);
+			if (hitItem) this.gallery.scrollToItem(hitItem);
+		}
 	}
 
 	onKeyDown(e) {

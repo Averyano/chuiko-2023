@@ -83,6 +83,9 @@ export default class Gallery extends Component {
 		this.speedMulti = 1;
 		this.speedExtraMotion = 1;
 
+		this.isScrollingToItem = false;
+		this._scrollTween = null;
+
 		this.metricsLength = 0;
 		this.metricsTargetBreakdown = -1;
 		this.metricsBreakdowns = [];
@@ -378,29 +381,24 @@ export default class Gallery extends Component {
 		map(this.items, (item) => {
 			item.update();
 			item.mesh.material.uniforms.uScrollVelocity.value = this.speed.current;
-			item.extraX += this.speed.current; //@TODO
 
-			// up
+			if (!this.isScrollingToItem) {
+				item.extraX += this.speed.current;
 
-			if (this.direction === 1) {
-				// down
-				if (
-					item.mesh.position.x >
-					this.maxWidth - item.bounds.width - this.sizes.width
-				) {
-					item.extraX -= this.maxWidth;
-					// console.log(item.mesh.position.y);
-					// console.log('------------------ 1');
-				}
-			} else if (this.direction === -1) {
-				// up
-				if (
-					item.mesh.position.x <
-					-this.maxWidth + item.bounds.width + this.sizes.width
-				) {
-					item.extraX += this.maxWidth;
-					// console.log(item.mesh.position.y);
-					// console.log('------------------ -1 ');
+				if (this.direction === 1) {
+					if (
+						item.mesh.position.x >
+						this.maxWidth - item.bounds.width - this.sizes.width
+					) {
+						item.extraX -= this.maxWidth;
+					}
+				} else if (this.direction === -1) {
+					if (
+						item.mesh.position.x <
+						-this.maxWidth + item.bounds.width + this.sizes.width
+					) {
+						item.extraX += this.maxWidth;
+					}
 				}
 			}
 		});
@@ -718,5 +716,45 @@ export default class Gallery extends Component {
 		// this.animateMesh(this.previous, null, canvas);
 		this.previous = null;
 		this.timer = setTimeout(() => canvas.classList.remove('dg', 'ac'), 1000); // canvas z-index 99999
+	}
+
+	scrollToItem(item) {
+		if (!item || !this.items.length || !this.isBoundReady) return;
+
+		// Show the preview immediately so the user gets instant feedback
+		this.setActive(null, item.mesh.uuid);
+
+		// Distance needed to center this item under the raycaster (world x = 0)
+		let delta = -item.mesh.position.x;
+
+		// Always take the shorter arc around the infinite loop
+		if (this.maxWidth > 0 && Math.abs(delta) > this.maxWidth / 2) {
+			delta = delta > 0 ? delta - this.maxWidth : delta + this.maxWidth;
+		}
+
+		// Snapshot all extraX values at the moment of click
+		const startX = this.items.map((i) => i.extraX);
+
+		// Kill any in-flight scroll-to tween
+		if (this._scrollTween) this._scrollTween.kill();
+
+		this.isScrollingToItem = true;
+		this.speed.current = 0;
+		this.speed.target = 0;
+
+		const proxy = { t: 0 };
+		this._scrollTween = GSAP.to(proxy, {
+			t: 1,
+			duration: 1.2,
+			ease: 'power3.out',
+			onUpdate: () => {
+				this.items.forEach((it, i) => {
+					it.extraX = startX[i] + delta * proxy.t;
+				});
+			},
+			onComplete: () => {
+				this.isScrollingToItem = false;
+			},
+		});
 	}
 }

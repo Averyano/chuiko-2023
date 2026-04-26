@@ -6,9 +6,9 @@
 	opacity: 1;
 	z-index: z('content');
 
-	cursor: grab;
+	// cursor: grab;
 
-	&:active {
-		cursor: grabbing;
-	}
+	// &:active {
+	// 	cursor: grabbing;
+	// }
 }
