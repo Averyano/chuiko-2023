@@ -37,6 +37,7 @@ export default class Gallery extends Component {
 		this.sizes = sizes;
 		this.extraSpeed = 200;
 		this.textureLoader = new THREE.TextureLoader();
+		this.textureCache = new Map(); // fullSrc → THREE.Texture, populated by preloadFullResTextures
 		this.currentSrc = null;
 		this.isBoundReady = false;
 
@@ -195,6 +196,7 @@ export default class Gallery extends Component {
 						res();
 						this.scene.traverse((obj) => (obj.frustumCulled = false)); // Workaround to avoid lag, renders all objects at all times. Not the best performance
 						this.onResize();
+						this.preloadFullResTextures();
 					} // fin
 				});
 
@@ -639,6 +641,15 @@ export default class Gallery extends Component {
 		// this.velocity = 1;
 	}
 
+	preloadFullResTextures() {
+		this.items.forEach((item) => {
+			if (this.textureCache.has(item.fullSrc)) return;
+			this.textureLoader.load(item.fullSrc, (texture) => {
+				this.textureCache.set(item.fullSrc, texture);
+			});
+		});
+	}
+
 	setActive(item, id) {
 		if (!this.mainItems[0] || this.items.length < 1) return;
 		if (id) {
@@ -655,56 +666,29 @@ export default class Gallery extends Component {
 		if (!item || !item.fullSrc) return;
 
 		this.currentSrc = item.fullSrc;
-		console.log('✌🏻');
-		console.log(item);
 
-		// this.elements.wImg.src = item.fullSrc;
-		this.textureLoader.load((item.fullSrc), ( texture ) => {
-			console.log(texture);
-			console.log(this.currentSrc, texture.image.src);
+		const applyTexture = (texture) => {
 			if (!this.mainItems[0] || !texture.image.src.includes(this.currentSrc)) return;
-			// in this example we create the material when the texture is loaded
 			this.mainItems[0].mesh.material.uniforms.uTexture.value = texture;
 			this.mainItems[0].mesh.material.uniforms.uTexture.value.needsUpdate = true;
-			if (this.mainItems.length === 0) return;
-
 			if (item.dataW == 1818) {
 				this.mainItems[0].mesh.scale.set(this.wBounds.width, this.wBounds.height, 1);
 			} else {
 				this.mainItems[0].mesh.scale.set(this.hBounds.width, this.hBounds.height, 1);
 			}
-			// const bound = this.elements.wImg.getBoundingClientRect();
-			// console.log(bound);
-			// console.log(this.wBounds);
-			// if (this.mainItems.length > 0)
-			// 	this.mainItems[0].mesh.scale.set(bound.width, bound.height, 1);
+		};
 
-		})
-		// console.log(this.mainItems[0].mesh.material.uniforms.uTexture.value);
+		const cached = this.textureCache.get(item.fullSrc);
+		if (cached) {
+			applyTexture(cached);
+		} else {
+			// Preload hasn't finished for this image yet — load it now and cache on arrival
+			this.textureLoader.load(item.fullSrc, (texture) => {
+				this.textureCache.set(item.fullSrc, texture);
+				applyTexture(texture);
+			});
+		}
 
-
-		// width and height are set in AddEventListeners
-		// this.mainItems[0].texture = texture;
-		// this.material.uniforms.textureImg.value = newTexture;
-		// this.material.uniforms.textureImg.value.needsUpdate = true;
-		// this.mainItems[0].aspect = threeCover(texture, 1818 / 1228);
-
-		// const meshWidth = this.mesh.geometry.parameters.width;
-		// const meshHeight = this.mesh.geometry.parameters.height;
-
-		// const scaledValue = this.calculateAspect(
-		// 	this.mesh.material.uniforms.uImageRes.value,
-		// 	{
-		// 		width: meshWidth,
-		// 		height: meshHeight,
-		// 	}
-		// );
-
-		// this.original.uResolution = new THREE.Vector2().copy(
-		// 	this.mesh.material.uniforms.uResolution.value
-		// );
-
-		// this.animateMesh(item, camera, null);
 		this.previous = item;
 		clearTimeout(this.timer);
 	}
