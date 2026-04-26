@@ -19,7 +19,7 @@ import { lerp } from '../../../utils/utils';
 import { clamp } from 'three/src/math/MathUtils';
 
 export default class Gallery extends Component {
-	constructor({ scene, sizes }) {
+	constructor({ scene, mainScene, sizes }) {
 		super({
 			element: '.cover',
 			elements: {
@@ -34,6 +34,7 @@ export default class Gallery extends Component {
 		});
 
 		this.scene = scene;
+		this.mainScene = mainScene;
 		this.sizes = sizes;
 		this.extraSpeed = 200;
 		this.textureLoader = new THREE.TextureLoader();
@@ -141,7 +142,8 @@ export default class Gallery extends Component {
 							uniforms: this.uniforms,
 							z: -1.5,
 						});
-						this.scene.add(item.mesh);
+						item.mesh.frustumCulled = false;
+						this.mainScene.add(item.mesh);
 						this.meshes.push(item.mesh);
 						this.mainItems.push(item);
 					});
@@ -551,6 +553,10 @@ export default class Gallery extends Component {
 	destroy() {
 		map(this.items, (item) => {
 			this.scene.remove(item.mesh);
+			item.destroy();
+		});
+		map(this.mainItems, (item) => {
+			this.mainScene.remove(item.mesh);
 			item.destroy();
 		});
 	}

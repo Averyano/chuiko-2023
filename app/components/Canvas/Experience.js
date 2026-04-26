@@ -58,8 +58,12 @@ export default class Experience extends Canvas {
 		this.scene.add(this.camera.el);
 		this.isMobile = this.sizes.width < 768;
 
+		// Separate scene for the main preview image so it bypasses the distortion pass
+		this.mainScene = new THREE.Scene();
+
 		this.gallery = new Gallery({
 			scene: this.scene,
+			mainScene: this.mainScene,
 			sizes: this.sizes,
 		});
 		this.isTouch = false;
@@ -284,8 +288,20 @@ export default class Experience extends Canvas {
 				this.params.jitterIntensity;
 
 			this.composer.render();
+
+			// Render main preview image without distortion on top.
+			// clearDepth() resets depth values left by the ShaderPass full-screen quad
+			// so the main image passes the depth test, while keeping the color buffer intact.
+			this.renderer.autoClear = false;
+			this.renderer.clearDepth();
+			this.renderer.render(this.mainScene, this.camera.el);
+			this.renderer.autoClear = true;
 		} else {
 			this.renderer.render(this.scene, this.camera.el);
+			this.renderer.autoClear = false;
+			this.renderer.clearDepth();
+			this.renderer.render(this.mainScene, this.camera.el);
+			this.renderer.autoClear = true;
 		}
 	}
 
@@ -475,6 +491,16 @@ export default class Experience extends Canvas {
 	}
 
 	destroy() {
+		// Dispose mainScene meshes (super.destroy only traverses this.scene)
+		this.mainScene.traverse((child) => {
+			if (child instanceof THREE.Mesh) {
+				for (const key in child.material) {
+					const value = child.material[key];
+					if (value && typeof value.dispose === 'function') value.dispose();
+				}
+			}
+		});
+
 		super.destroy();
 		GSAP.fromTo(
 			this.element,
