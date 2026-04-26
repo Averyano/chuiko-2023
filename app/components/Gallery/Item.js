@@ -7,7 +7,7 @@ export default class Item extends Component {
 			element: item,
 			elements: {
 				image: image,
-				overlay: '.thumb__overlay',
+				// overlay: '.thumb__overlay',
 			},
 		});
 		console.log(format);
@@ -25,12 +25,12 @@ export default class Item extends Component {
 
 	setActive() {
 		this.element.classList.add('active');
-		this.elements.overlay.classList.add('active');
+		// this.elements.overlay.classList.add('active');
 	}
 
 	setInactive() {
 		this.element.classList.remove('active');
-		this.elements.overlay.classList.remove('active');
+		// this.elements.overlay.classList.remove('active');
 	}
 
 	destroy() {}

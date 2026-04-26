@@ -1,10 +1,10 @@
 .thumb {
-	flex-basis: 10%; /* Adjust these values as necessary */
+	// flex-basis: 10%; /* Adjust these values as necessary */
 
-	@include media('<desktop') {
-		flex-basis: 114px;
-		max-height: 114px;
-	}
+	// @include media('<desktop') {
+	// 	flex-basis: 114px;
+	// 	max-height: 114px;
+	// }
 	@include media('<phone') {
 		flex-basis: 96px;
 		max-height: 96px;
@@ -20,6 +20,7 @@
 	cursor: pointer;
 
 	padding: 6px;
+	padding-bottom: 0;
 }
 
 .thumb__item {

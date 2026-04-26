@@ -72,7 +72,7 @@ export default class Navigation extends Component {
 	 */
 	createTimeline() {
 		this.tl = GSAP.timeline({
-			duration: 0.7,
+			duration: 1.2,
 			ease: 'power4.out',
 			paused: true,
 		});
@@ -80,18 +80,18 @@ export default class Navigation extends Component {
 		this.tl.fromTo(
 			this.elements.navItems,
 			{ y: -50, autoAlpha: 0 },
-			{ y: 0, autoAlpha: 1, stagger: 0.1 },
+			{ y: 0, autoAlpha: 1, stagger: 0.1, ease: 'power4.out' },
 			0.2
 		);
 
-		let duration = this.mobilemediaQuery.matches ? 0.5 : 1;
+		let duration = this.mobilemediaQuery.matches ? 0.68 : 1.2;
 
 		this.tl.fromTo(
 			this.element,
 			{
-				yPercent: -100,
+				autoAlpha: 0,
 			},
-			{ yPercent: 0, duration: duration, ease: 'power4.out' },
+			{ autoAlpha: 0.96, duration: duration, ease: 'expo.out' },
 			0
 		);
 	}

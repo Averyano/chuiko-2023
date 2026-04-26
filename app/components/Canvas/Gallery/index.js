@@ -12,13 +12,13 @@ import GlobalHandler from '../../../classes/GlobalHandler';
 import Component from '../../../classes/Component';
 import GalleryItem from './GalleryItem';
 import MainGalleryItem from './MainGalleryItem';
+import BgBlurItem from './BgBlurItem';
 
 // Utils
 import { threeCover } from '../../../utils/threeCover';
 import { lerp } from '../../../utils/utils';
 import { clamp } from 'three/src/math/MathUtils';
 
-const CROSS_SIZE = 10; // px
 const CORNER_SIZE = 10; // px
 
 export default class Gallery extends Component {
@@ -142,18 +142,14 @@ export default class Gallery extends Component {
 						})
 				);
 
-				const crossPromise = new Promise((resolve) => {
-					this.textureLoader.load('/images/cross.png', resolve);
-				});
 				const cornerPromise = new Promise((resolve) => {
 					this.textureLoader.load('/images/corner.png', resolve);
 				});
 
 				Promise.all([
 					Promise.all(mainImagePromises),
-					crossPromise,
 					cornerPromise,
-				]).then(([mainLoaded, crossTexture, cornerTexture]) => {
+				]).then(([mainLoaded, cornerTexture]) => {
 					mainLoaded.forEach(({ img, texture }) => {
 						const aspect = threeCover(
 							texture,
@@ -174,26 +170,6 @@ export default class Gallery extends Component {
 						this.mainScene.add(item.mesh);
 						this.meshes.push(item.mesh);
 						this.mainItems.push(item);
-
-						// Cross overlay — centered on the main image
-						const crossSize = CROSS_SIZE;
-						const crossMesh = new THREE.Mesh(
-							new THREE.PlaneGeometry(1, 1),
-							new THREE.MeshBasicMaterial({
-								map: crossTexture,
-								transparent: true,
-								depthWrite: false,
-							})
-						);
-						crossMesh.scale.set(crossSize, crossSize, 1);
-						crossMesh.position.set(
-							item.mesh.position.x,
-							item.mesh.position.y,
-							-1.4
-						);
-						crossMesh.frustumCulled = false;
-						this.mainScene.add(crossMesh);
-						item.crossMesh = crossMesh;
 
 						// Corner overlays (TL, TR, BR, BL)
 						const cornerSize = CORNER_SIZE;
@@ -303,6 +279,15 @@ export default class Gallery extends Component {
 
 						if (this.items.length === imageBounds.length) {
 							this.isReady = true;
+
+							// Create full-screen blurred background using first thumbnail
+							const firstTexture = this.items[0].mesh.material.uniforms.uTexture.value;
+							this.bgBlurItem = new BgBlurItem({
+								scene: this.scene,
+								sizes: this.sizes,
+								texture: firstTexture,
+							});
+
 							res();
 							this.scene.traverse((obj) => (obj.frustumCulled = false)); // Workaround to avoid lag, renders all objects at all times. Not the best performance
 							this.onResize();
@@ -573,7 +558,7 @@ export default class Gallery extends Component {
 
 				// Reposition and rescale the main preview mesh to match the new DOM bounds
 				if (this.mainItems[0] && this.wBounds) {
-					const b = this.wBounds;
+					const b = this.currentMainBounds || this.wBounds;
 					this.mainItems[0].mesh.scale.set(b.width, b.height, 1);
 					this.mainItems[0].mesh.position.set(
 						(b.left + b.right) / 2 - this.sizes.width / 2,
@@ -588,6 +573,8 @@ export default class Gallery extends Component {
 					}
 					this._updateMainOverlays();
 				}
+
+				if (this.bgBlurItem) this.bgBlurItem.onResize(this.sizes);
 
 				requestIdleCallback(() => {
 					this.isRescaling = false;
@@ -677,19 +664,15 @@ export default class Gallery extends Component {
 
 	_updateMainOverlays() {
 		const item = this.mainItems[0];
-		if (!item || !item.crossMesh) return;
+		if (!item || !item.cornerMeshes) return;
 		const mx = item.mesh.position.x;
 		const my = item.mesh.position.y;
 		const w = item.mesh.scale.x;
 		const h = item.mesh.scale.y;
-		const crossSize = CROSS_SIZE;
 		const cornerSize = CORNER_SIZE;
 		const hw = w / 2;
 		const hh = h / 2;
 		const cs2 = cornerSize / 2;
-
-		item.crossMesh.scale.set(crossSize, crossSize, 1);
-		item.crossMesh.position.set(mx, my, -1.4);
 
 		if (item.cornerMeshes) {
 			const offsets = [
@@ -706,6 +689,10 @@ export default class Gallery extends Component {
 	}
 
 	destroy() {
+		if (this.bgBlurItem) {
+			this.bgBlurItem.destroy();
+			this.bgBlurItem = null;
+		}
 		map(this.items, (item) => {
 			this.scene.remove(item.mesh);
 			if (item.filmMesh) {
@@ -716,11 +703,6 @@ export default class Gallery extends Component {
 			item.destroy();
 		});
 		map(this.mainItems, (item) => {
-			if (item.crossMesh) {
-				this.mainScene.remove(item.crossMesh);
-				item.crossMesh.geometry.dispose();
-				item.crossMesh.material.dispose();
-			}
 			if (item.cornerMeshes) {
 				item.cornerMeshes.forEach((m) => {
 					this.mainScene.remove(m);
@@ -853,24 +835,26 @@ export default class Gallery extends Component {
 
 		this.currentSrc = item.fullSrc;
 
+		// Update blurred background immediately with thumbnail (already in memory)
+		if (this.bgBlurItem) {
+			const thumbTexture = item.mesh.material.uniforms.uTexture.value;
+			this.bgBlurItem.updateTexture(thumbTexture);
+			this.bgBlurItem.show();
+		}
+
 		const applyTexture = (texture) => {
 			if (!this.mainItems[0] || !texture.image.src.includes(this.currentSrc))
 				return;
 			this.mainItems[0].mesh.material.uniforms.uTexture.value = texture;
 			this.mainItems[0].mesh.material.uniforms.uTexture.value.needsUpdate = true;
-			if (item.dataW == 1818) {
-				this.mainItems[0].mesh.scale.set(
-					this.wBounds.width,
-					this.wBounds.height,
-					1
-				);
-			} else {
-				this.mainItems[0].mesh.scale.set(
-					this.hBounds.width,
-					this.hBounds.height,
-					1
-				);
-			}
+			const b = item.dataW == 1818 ? this.wBounds : this.hBounds;
+			this.currentMainBounds = b;
+			this.mainItems[0].mesh.scale.set(b.width, b.height, 1);
+			this.mainItems[0].mesh.position.set(
+				(b.left + b.right) / 2 - this.sizes.width / 2,
+				-((b.top + b.bottom) / 2) + this.sizes.height / 2,
+				-1.5
+			);
 			this._updateMainOverlays();
 		};
 
