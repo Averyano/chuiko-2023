@@ -146,63 +146,62 @@ export default class Gallery extends Component {
 					this.textureLoader.load('/images/corner.png', resolve);
 				});
 
-				Promise.all([
-					Promise.all(mainImagePromises),
-					cornerPromise,
-				]).then(([mainLoaded, cornerTexture]) => {
-					mainLoaded.forEach(({ img, texture }) => {
-						const aspect = threeCover(
-							texture,
-							img.bounds.width / img.bounds.height
-						);
-						img.texture = texture;
-						img.aspect = aspect;
-
-						const item = new MainGalleryItem({
-							obj: img,
-							texture,
-							aspect,
-							sizes: this.sizes,
-							uniforms: this.uniforms,
-							z: -1.5,
-						});
-						item.mesh.frustumCulled = false;
-						this.mainScene.add(item.mesh);
-						this.meshes.push(item.mesh);
-						this.mainItems.push(item);
-
-						// Corner overlays (TL, TR, BR, BL)
-						const cornerSize = CORNER_SIZE;
-						const hw = img.bounds.width / 2;
-						const hh = img.bounds.height / 2;
-						const mx = item.mesh.position.x;
-						const my = item.mesh.position.y;
-						const cs2 = cornerSize / 2;
-
-						const cornerDefs = [
-							{ rot: 0, dx: -hw + cs2, dy: hh - cs2 }, // TL
-							{ rot: -Math.PI / 2, dx: hw - cs2, dy: hh - cs2 }, // TR
-							{ rot: Math.PI, dx: hw - cs2, dy: -hh + cs2 }, // BR
-							{ rot: Math.PI / 2, dx: -hw + cs2, dy: -hh + cs2 }, // BL
-						];
-						item.cornerMeshes = cornerDefs.map(({ rot, dx, dy }) => {
-							const m = new THREE.Mesh(
-								new THREE.PlaneGeometry(1, 1),
-								new THREE.MeshBasicMaterial({
-									map: cornerTexture,
-									transparent: true,
-									depthWrite: false,
-								})
+				Promise.all([Promise.all(mainImagePromises), cornerPromise]).then(
+					([mainLoaded, cornerTexture]) => {
+						mainLoaded.forEach(({ img, texture }) => {
+							const aspect = threeCover(
+								texture,
+								img.bounds.width / img.bounds.height
 							);
-							m.scale.set(cornerSize, cornerSize, 1);
-							m.position.set(mx + dx, my + dy, -1.4);
-							m.rotation.z = rot;
-							m.frustumCulled = false;
-							this.mainScene.add(m);
-							return m;
+							img.texture = texture;
+							img.aspect = aspect;
+
+							const item = new MainGalleryItem({
+								obj: img,
+								texture,
+								aspect,
+								sizes: this.sizes,
+								uniforms: this.uniforms,
+								z: -1.5,
+							});
+							item.mesh.frustumCulled = false;
+							this.mainScene.add(item.mesh);
+							this.meshes.push(item.mesh);
+							this.mainItems.push(item);
+
+							// Corner overlays (TL, TR, BR, BL)
+							const cornerSize = CORNER_SIZE;
+							const hw = img.bounds.width / 2;
+							const hh = img.bounds.height / 2;
+							const mx = item.mesh.position.x;
+							const my = item.mesh.position.y;
+							const cs2 = cornerSize / 2;
+
+							const cornerDefs = [
+								{ rot: 0, dx: -hw + cs2, dy: hh - cs2 }, // TL
+								{ rot: -Math.PI / 2, dx: hw - cs2, dy: hh - cs2 }, // TR
+								{ rot: Math.PI, dx: hw - cs2, dy: -hh + cs2 }, // BR
+								{ rot: Math.PI / 2, dx: -hw + cs2, dy: -hh + cs2 }, // BL
+							];
+							item.cornerMeshes = cornerDefs.map(({ rot, dx, dy }) => {
+								const m = new THREE.Mesh(
+									new THREE.PlaneGeometry(1, 1),
+									new THREE.MeshBasicMaterial({
+										map: cornerTexture,
+										transparent: true,
+										depthWrite: false,
+									})
+								);
+								m.scale.set(cornerSize, cornerSize, 1);
+								m.position.set(mx + dx, my + dy, -1.4);
+								m.rotation.z = rot;
+								m.frustumCulled = false;
+								this.mainScene.add(m);
+								return m;
+							});
 						});
-					});
-				});
+					}
+				);
 
 				// BG Image
 				// this.textureLoader.load(this.backgroundImage.src, (texture) => {
@@ -229,15 +228,9 @@ export default class Gallery extends Component {
 				// });
 
 				// Create a mesh for each image and add it to the scene
-				const filmPromise = new Promise((resolve) => {
-					this.textureLoader.load('/images/film.png', (texture) => {
-						this.filmTexture = texture;
-						resolve(texture);
-					});
-				});
 
-				Promise.all([Promise.all(loadTexturesPromises), filmPromise]).then(
-					([loadedData, filmTexture]) => {
+				Promise.all([Promise.all(loadTexturesPromises)]).then(
+					([loadedData]) => {
 						loadedData.forEach(
 							({ obj, texture, aspect, index, dataW, dataH }) => {
 								const item = new GalleryItem({
@@ -255,25 +248,6 @@ export default class Gallery extends Component {
 								this.meshes.push(item.mesh);
 								// Also to arrays for later usage
 								this.items.push(item);
-
-								// Film strip overlay mesh — sits in front of the thumbnail (z=-0.9 vs z=-1)
-								const filmMesh = new THREE.Mesh(
-									new THREE.PlaneGeometry(1, 1),
-									new THREE.MeshBasicMaterial({
-										map: filmTexture,
-										transparent: true,
-										depthWrite: false,
-									})
-								);
-								filmMesh.scale.set(item.bounds.width, item.bounds.height, 1);
-								filmMesh.position.set(
-									item.mesh.position.x,
-									item.mesh.position.y,
-									-0.9
-								);
-								filmMesh.frustumCulled = false;
-								this.scene.add(filmMesh);
-								item.filmMesh = filmMesh;
 							}
 						);
 
@@ -281,7 +255,8 @@ export default class Gallery extends Component {
 							this.isReady = true;
 
 							// Create full-screen blurred background using first thumbnail
-							const firstTexture = this.items[0].mesh.material.uniforms.uTexture.value;
+							const firstTexture =
+								this.items[0].mesh.material.uniforms.uTexture.value;
 							this.bgBlurItem = new BgBlurItem({
 								scene: this.scene,
 								sizes: this.sizes,
@@ -338,14 +313,7 @@ export default class Gallery extends Component {
 					item.bounds.height
 				);
 			}
-			if (item.filmMesh) {
-				item.filmMesh.scale.set(item.bounds.width, item.bounds.height, 1);
-				item.filmMesh.position.set(
-					item.mesh.position.x,
-					item.mesh.position.y,
-					-0.9
-				);
-			}
+
 			item.extraY = 0;
 
 			item.getParams();
@@ -356,7 +324,7 @@ export default class Gallery extends Component {
 	}
 
 	checkMaxWidth(bounds) {
-		this.maxWidth = Math.max(this.maxWidth, bounds.width + bounds.left - 6);
+		this.maxWidth = Math.max(this.maxWidth, bounds.width + bounds.left - 3);
 	}
 
 	getBounds() {
@@ -492,11 +460,6 @@ export default class Gallery extends Component {
 		map(this.items, (item) => {
 			item.update();
 			item.mesh.material.uniforms.uScrollVelocity.value = this.speed.current;
-
-			if (item.filmMesh) {
-				item.filmMesh.position.x = item.mesh.position.x;
-				item.filmMesh.position.y = item.mesh.position.y;
-			}
 
 			if (!this.isScrollingToItem) {
 				item.extraX += this.speed.current;
@@ -695,11 +658,7 @@ export default class Gallery extends Component {
 		}
 		map(this.items, (item) => {
 			this.scene.remove(item.mesh);
-			if (item.filmMesh) {
-				this.scene.remove(item.filmMesh);
-				item.filmMesh.geometry.dispose();
-				item.filmMesh.material.dispose();
-			}
+
 			item.destroy();
 		});
 		map(this.mainItems, (item) => {
