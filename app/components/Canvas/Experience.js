@@ -2,12 +2,12 @@ import * as THREE from 'three';
 THREE.Cache.enabled = true;
 
 import GSAP from 'gsap';
-
 import Canvas from '../../classes/Canvas';
 import Gallery from './Gallery';
 import Camera from './Camera';
 import Lights from './Lights';
 import Raycaster from './Raycaster';
+import { FilmGrainShader } from './FilmGrainShader';
 
 export default class Experience extends Canvas {
 	constructor(el) {
@@ -30,8 +30,8 @@ export default class Experience extends Canvas {
 		this.camera = new Camera({ sizes: this.sizes });
 		this.scene.add(this.camera.el);
 
-		// Separate scene for the main preview image — rendered after the main scene
-		// so it always appears on top without being affected by any post-processing.
+		// Separate scene for the main preview image — rendered after the gallery scene
+		// so it always wins depth (via clearDepth in the composer pass).
 		this.mainScene = new THREE.Scene();
 
 		this.gallery = new Gallery({
@@ -50,6 +50,7 @@ export default class Experience extends Canvas {
 		this.clickStart = { x: 0, y: 0 };
 
 		this.createRaycaster();
+		this._setupComposer();
 		this.addEventListeners();
 		this.onResize();
 
@@ -67,12 +68,13 @@ export default class Experience extends Canvas {
 	// Called from app.js at onPreloaded()
 	updateImages(cb) {
 		if (this.gallery.items.length === 0) {
-			this.gallery.createItems(this.gallery.imageBounds).then(() => {
-				cb();
+			this.gallery.createItems().then(() => {
 				this.isReady = true;
+				cb();
 			});
 		} else {
 			this.gallery.updateItems(this.gallery.imageBounds);
+			cb();
 		}
 	}
 
@@ -109,11 +111,20 @@ export default class Experience extends Canvas {
 
 		this.gallery.update();
 
+		// Render both scenes into the off-screen target
+		this.renderer.setRenderTarget(this._grainTarget);
+		this.renderer.clear();
 		this.renderer.render(this.scene, this.camera.el);
 		this.renderer.autoClear = false;
 		this.renderer.clearDepth();
 		this.renderer.render(this.mainScene, this.camera.el);
 		this.renderer.autoClear = true;
+		this.renderer.setRenderTarget(null);
+
+		// Apply film grain and output to canvas
+		this._grainMaterial.uniforms.tDiffuse.value = this._grainTarget.texture;
+		this._grainMaterial.uniforms.uTime.value = performance.now() / 1000.0;
+		this.renderer.render(this._grainScene, this._grainCamera);
 	}
 
 	onResize() {
@@ -128,10 +139,48 @@ export default class Experience extends Canvas {
 		this.renderer.setSize(this.sizes.width, this.sizes.height);
 		this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+		if (this._grainTarget) {
+			const pr = Math.min(window.devicePixelRatio, 2);
+			this._grainTarget.setSize(this.sizes.width * pr, this.sizes.height * pr);
+		}
+
 		if (this.gallery) {
 			this.gallery.sizes = this.sizes;
 			if (this.gallery.onResize) this.gallery.onResize();
 		}
+	}
+
+	_setupComposer() {
+		const pr = Math.min(window.devicePixelRatio, 2);
+		this._grainTarget = new THREE.WebGLRenderTarget(
+			this.sizes.width * pr,
+			this.sizes.height * pr,
+			{ depthBuffer: true, stencilBuffer: false }
+		);
+
+		// Standard fullscreen-quad: ortho maps NDC ±1 directly to screen corners
+		this._grainCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+		const quad = new THREE.Mesh(
+			new THREE.PlaneGeometry(2, 2),
+			new THREE.ShaderMaterial({
+				uniforms: {
+					tDiffuse:   { value: null },
+					uTime:      { value: 0.0 },
+					uStrength:  { value: 0.35 },
+					uGrainSize: { value: 0.15 },
+				},
+				vertexShader: FilmGrainShader.vertexShader,
+				fragmentShader: FilmGrainShader.fragmentShader,
+				depthTest: false,
+				depthWrite: false,
+			})
+		);
+		quad.frustumCulled = false;
+		this._grainMaterial = quad.material;
+
+		this._grainScene = new THREE.Scene();
+		this._grainScene.add(quad);
 	}
 
 	addEventListeners() {

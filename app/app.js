@@ -129,13 +129,10 @@ class App {
 		console.log('%c Preloaded');
 		if (this.loader.template === 'home') {
 			if (!this.experience) this.experience = new Experience('.webgl');
-			else
-				this.experience.updateImages(() => {
-					// this.show();
-				});
-
-			this.loader.preloader.hide();
-			this.show();
+			this.experience.updateImages(() => {
+				this.loader.preloader.hide();
+				this.show();
+			});
 		} else {
 			this.loader.preloader.hide();
 			this.show();
