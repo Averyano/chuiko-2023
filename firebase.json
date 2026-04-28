@@ -15,12 +15,42 @@
 		],
 		"headers": [
 			{
-				"source": "**/*.@(jpg|jpeg|gif|png|webp|js|css|woff|ttf)",
+				"source": "main*.js",
 				"headers": [
-					{
-						"key": "Cache-Control",
-						"value": "public, max-age=2592000"
-					}
+					{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+				]
+			},
+			{
+				"source": "**/*.@(woff|woff2|ttf|otf)",
+				"headers": [
+					{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+				]
+			},
+			{
+				"source": "**/*.@(jpg|jpeg|gif|png|webp|svg)",
+				"headers": [
+					{ "key": "Cache-Control", "value": "public, max-age=2592000, must-revalidate" }
+				]
+			},
+			{
+				"source": "**/*.css",
+				"headers": [
+					{ "key": "Cache-Control", "value": "public, max-age=86400, must-revalidate" }
+				]
+			},
+			{
+				"source": "**/*.html",
+				"headers": [
+					{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+				]
+			},
+			{
+				"source": "**",
+				"headers": [
+					{ "key": "X-Frame-Options", "value": "DENY" },
+					{ "key": "X-Content-Type-Options", "value": "nosniff" },
+					{ "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+					{ "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=()" }
 				]
 			}
 		]

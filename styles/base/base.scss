@@ -56,22 +56,6 @@ button {
 	outline: none;
 }
 
-.dbg {
-	display: flex;
-	flex-direction: column;
-	position: fixed;
-	z-index: 9999;
-	top: 0;
-	left: 0;
-	opacity: 0;
-
-	span {
-		background: rgba(0, 0, 0, 0.5);
-		color: white;
-		padding: 5px;
-	}
-}
-
 h1,
 h2 {
 	font-family: 'Thunder', 'Trebuchet MS', 'Helvetica', 'Arial';

@@ -17,7 +17,10 @@ export default class Experience extends Canvas {
 			current: null,
 			previous: null,
 		};
-		this.dbg4 = document.querySelector('.dbg4');
+
+		// NDC y the bottom-strip raycaster fires at. Recomputed from .thumb bounds
+		// in onResize() so it tracks the actual thumb-bar position across viewports.
+		this.raycasterY = -0.95;
 
 		this.x = {
 			start: 0,
@@ -79,14 +82,11 @@ export default class Experience extends Canvas {
 	}
 
 	update() {
-		this.raycaster.el.setFromCamera({ x: 0, y: -0.95 }, this.camera.el);
-		if (window.isMobile)
-			this.raycaster.el.setFromCamera({ x: 0, y: -0.75 }, this.camera.el);
+		this.raycaster.el.setFromCamera({ x: 0, y: this.raycasterY }, this.camera.el);
 
 		this.raycaster.update();
 
 		if (this.raycaster.currentIntersect) {
-			this.dbg4.innerHTML = this.raycaster.currentIntersect.object.uuid;
 			this.intersectId.current = this.raycaster.currentIntersect.object.uuid;
 
 			if (this.intersectId.current !== this.intersectId.previous) {
@@ -142,6 +142,17 @@ export default class Experience extends Canvas {
 		if (this._grainTarget) {
 			const pr = Math.min(window.devicePixelRatio, 2);
 			this._grainTarget.setSize(this.sizes.width * pr, this.sizes.height * pr);
+		}
+
+		// Aim the bottom-strip raycaster at the .thumb bar's vertical center. The bar
+		// position varies across viewports (desktop ~bottom 10%, mobile ~96px tall),
+		// so a fixed NDC y misses the meshes on some sizes — e.g. y=-0.75 fired above
+		// the thumb strip on tall phones, breaking the active-image update on scroll.
+		const thumbEl = this.gallery && this.gallery.elements && this.gallery.elements.thumb;
+		if (thumbEl) {
+			const r = thumbEl.getBoundingClientRect();
+			const centerY = (r.top + r.bottom) / 2;
+			this.raycasterY = 1 - (centerY / this.sizes.height) * 2;
 		}
 
 		if (this.gallery) {

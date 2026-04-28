@@ -4,7 +4,6 @@ import * as THREE from 'three';
 export default class Raycaster {
 	constructor({ meshes }) {
 		this.el = new THREE.Raycaster();
-		this.dbg3 = document.querySelector('.dbg3');
 
 		this.currentIntersect = null;
 		this.intersect = {
@@ -52,8 +51,6 @@ export default class Raycaster {
 
 		if (this.isIntersecting && !this.isCleared)
 			requestIdleCallback(this.clearMeshes.bind(this));
-
-		this.dbg3.innerHTML = `isIntersecting: ${this.isIntersecting}`;
 	}
 
 	addEventListeners() {
