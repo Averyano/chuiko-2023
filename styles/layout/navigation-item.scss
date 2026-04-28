@@ -1,6 +1,10 @@
 .nav__item {
 	max-width: 100%;
 	// min-width: 120px;
+
+	span {
+		font-size: 14px;
+	}
 }
 .nav__item__title {
 	margin-bottom: 4px;
@@ -31,8 +35,9 @@
 
 	@include media('<phone') {
 		&.shift {
-			min-height: 48px;
-			justify-content: space-between;
+			& span:nth-child(2) {
+				align-self: flex-start;
+			}
 		}
 	}
 }

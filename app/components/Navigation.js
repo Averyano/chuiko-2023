@@ -12,6 +12,7 @@ export default class Navigation extends Component {
 				content: '.menu__content',
 				navItems: '.nav__item',
 				menuContainer: '.nav__menu__container',
+				portrait: '.nav__portrait__figure',
 			},
 		});
 
@@ -84,6 +85,13 @@ export default class Navigation extends Component {
 			0.2
 		);
 
+		this.tl.fromTo(
+			this.elements.portrait,
+			{ clipPath: 'inset(0 0 0 100%)' },
+			{ clipPath: 'inset(0 0 0 0%)', duration: 1.0, ease: 'power4.out' },
+			0.1
+		);
+
 		let duration = this.mobilemediaQuery.matches ? 0.68 : 1.2;
 
 		this.tl.fromTo(
@@ -108,5 +116,12 @@ export default class Navigation extends Component {
 		this.tl.reverse();
 	}
 
-	addEventListeners() {}
+	addEventListeners() {
+		window.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape' && this.isOpen) {
+				NodeEmitter.emit('closeMenu');
+				this.hamburger.toggleState();
+			}
+		});
+	}
 }

@@ -63,23 +63,68 @@
 
 .menu__content {
 	display: grid;
-	grid-template-rows: repeat(3, 1fr);
-	grid-gap: 100px;
-	gap: 100px;
-	align-items: center;
-	justify-items: start;
-	justify-content: center;
+	grid-template-columns: 1fr 1.618fr;
+	align-items: stretch;
 
 	width: 100%;
 	height: 100%;
-	max-width: 1400px;
-
-	margin: auto;
-	padding: 20vh 0;
-
-	overflow-y: auto;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
 
 	& .nav__item {
 		opacity: 0;
+	}
+
+	@include media('<tablet') {
+		display: flex;
+		flex-direction: column;
+	}
+}
+
+.menu__links {
+	display: flex;
+	flex-direction: column;
+	gap: 60px;
+	justify-content: center;
+	align-items: flex-start;
+	padding: 15vh 4vw 15vh 10vw;
+	overflow-y: auto;
+
+	@include media('<tablet') {
+		width: 100%;
+		padding: 6vh 10vw;
+		gap: 40px;
+		justify-content: center;
+	}
+}
+
+.nav__portrait {
+	position: relative;
+	height: 100%;
+	overflow: hidden;
+
+	&__figure {
+		position: absolute;
+		inset: 0;
+		margin: 0;
+		padding: 0;
+		clip-path: inset(0 0 0 100%);
+	}
+
+	&__image {
+		position: absolute;
+		inset: 0;
+		background: url(images/victoria-chuiko.jpg);
+		background-size: cover;
+		background-position: right;
+	}
+
+	@include media('<tablet') {
+		display: block;
+		height: 40vh;
+		width: 100%;
+		flex-shrink: 0;
+		order: -1;
 	}
 }

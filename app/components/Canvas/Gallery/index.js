@@ -20,6 +20,7 @@ import { lerp } from '../../../utils/utils';
 import { clamp } from 'three/src/math/MathUtils';
 
 const CORNER_SIZE = 10; // px
+const CROSS_SIZE = 12; // px
 
 export default class Gallery extends Component {
 	constructor({ scene, mainScene, sizes }) {
@@ -91,6 +92,8 @@ export default class Gallery extends Component {
 		this.isScrollingToItem = false;
 		this._scrollTween = null;
 		this.hoveredUuid = null;
+		this.thumbCornerMeshes = [];
+		this.crossMesh = null;
 
 		this.metricsLength = 0;
 		this.metricsTargetBreakdown = -1;
@@ -146,6 +149,10 @@ export default class Gallery extends Component {
 					this.textureLoader.load('/images/corner.png', resolve);
 				});
 
+				const crossPromise = new Promise((resolve) => {
+					this.textureLoader.load('/images/cross.png', resolve);
+				});
+
 				// BG Image
 				// this.textureLoader.load(this.backgroundImage.src, (texture) => {
 				// 	const aspect = threeCover(
@@ -170,12 +177,13 @@ export default class Gallery extends Component {
 				// 	this.backgroundItem = item;
 				// });
 
-				// Wait for thumbnails, main images, and corner texture before resolving
+				// Wait for thumbnails, main images, corner and cross textures before resolving
 				Promise.all([
 					Promise.all(loadTexturesPromises),
 					Promise.all(mainImagePromises),
 					cornerPromise,
-				]).then(([loadedData, mainLoaded, cornerTexture]) => {
+					crossPromise,
+				]).then(([loadedData, mainLoaded, cornerTexture, crossTexture]) => {
 					// Set up main preview meshes
 					mainLoaded.forEach(({ img, texture }) => {
 						const aspect = threeCover(
@@ -258,6 +266,39 @@ export default class Gallery extends Component {
 							sizes: this.sizes,
 							texture: firstTexture,
 						});
+
+						// Thumb corner overlays (hidden until first setActive)
+						const rotations = [0, -Math.PI / 2, Math.PI, Math.PI / 2];
+						this.thumbCornerMeshes = rotations.map((rot) => {
+							const m = new THREE.Mesh(
+								new THREE.PlaneGeometry(1, 1),
+								new THREE.MeshBasicMaterial({
+									map: cornerTexture,
+									transparent: true,
+									depthWrite: false,
+								})
+							);
+							m.scale.set(CORNER_SIZE, CORNER_SIZE, 1);
+							m.rotation.z = rot;
+							m.frustumCulled = false;
+							m.visible = false;
+							this.scene.add(m);
+							return m;
+						});
+
+						// Cross icon at bottom-center of active thumb (hidden until first setActive)
+						this.crossMesh = new THREE.Mesh(
+							new THREE.PlaneGeometry(1, 1),
+							new THREE.MeshBasicMaterial({
+								map: crossTexture,
+								transparent: true,
+								depthWrite: false,
+							})
+						);
+						this.crossMesh.scale.set(CROSS_SIZE, CROSS_SIZE, 1);
+						this.crossMesh.frustumCulled = false;
+						this.crossMesh.visible = false;
+						this.scene.add(this.crossMesh);
 
 						res();
 						this.scene.traverse((obj) => (obj.frustumCulled = false)); // Workaround to avoid lag, renders all objects at all times. Not the best performance
@@ -473,6 +514,8 @@ export default class Gallery extends Component {
 			}
 		});
 
+		if (this.previous) this._updateThumbOverlays(this.previous);
+
 		requestIdleCallback(() => {
 			if (this.currentHeight >= this.maxWidth) {
 				console.log('Reached Max Height!');
@@ -603,10 +646,10 @@ export default class Gallery extends Component {
 
 		if (e.code === 'ArrowLeft' || e.keyCode === 37) {
 			e.preventDefault();
-			this._navigateByKey(-1);
+			this._navigateByKey(1);
 		} else if (e.code === 'ArrowRight' || e.keyCode === 39) {
 			e.preventDefault();
-			this._navigateByKey(1);
+			this._navigateByKey(-1);
 		}
 	}
 
@@ -619,6 +662,28 @@ export default class Gallery extends Component {
 	}
 
 	onKeyUp(e) {}
+
+	_updateThumbOverlays(item) {
+		if (!item || !this.thumbCornerMeshes.length || !this.crossMesh) return;
+		const mx = item.mesh.position.x;
+		const my = item.mesh.position.y;
+		const hw = item.bounds.width / 2;
+		const hh = item.bounds.height / 2;
+		const cs2 = CORNER_SIZE / 2;
+		const z = -0.9;
+
+		const offsets = [
+			{ dx: -hw + cs2, dy:  hh - cs2 }, // TL
+			{ dx:  hw - cs2, dy:  hh - cs2 }, // TR
+			{ dx:  hw - cs2, dy: -hh + cs2 }, // BR
+			{ dx: -hw + cs2, dy: -hh + cs2 }, // BL
+		];
+		this.thumbCornerMeshes.forEach((m, i) => {
+			m.position.set(mx + offsets[i].dx, my + offsets[i].dy, z);
+		});
+
+		this.crossMesh.position.set(mx, my, z);
+	}
 
 	_updateMainOverlays() {
 		const item = this.mainItems[0];
@@ -650,6 +715,20 @@ export default class Gallery extends Component {
 		if (this.bgBlurItem) {
 			this.bgBlurItem.destroy();
 			this.bgBlurItem = null;
+		}
+		if (this.thumbCornerMeshes) {
+			this.thumbCornerMeshes.forEach((m) => {
+				this.scene.remove(m);
+				m.geometry.dispose();
+				m.material.dispose();
+			});
+			this.thumbCornerMeshes = [];
+		}
+		if (this.crossMesh) {
+			this.scene.remove(this.crossMesh);
+			this.crossMesh.geometry.dispose();
+			this.crossMesh.material.dispose();
+			this.crossMesh = null;
 		}
 		map(this.items, (item) => {
 			this.scene.remove(item.mesh);
@@ -824,6 +903,12 @@ export default class Gallery extends Component {
 		}
 
 		this.previous = item;
+
+		if (this.thumbCornerMeshes.length) {
+			this.thumbCornerMeshes.forEach((m) => { m.visible = true; });
+		}
+		if (this.crossMesh) this.crossMesh.visible = true;
+
 		clearTimeout(this.timer);
 	}
 

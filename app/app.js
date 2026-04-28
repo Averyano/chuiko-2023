@@ -117,10 +117,12 @@ class App {
 
 	registerNodeEvents() {
 		NodeEmitter.on('openMenu', () => {
+			this.isNavOpen = true;
 			this.navigation.openMenu();
 		});
 
 		NodeEmitter.on('closeMenu', () => {
+			this.isNavOpen = false;
 			this.navigation.closeMenu();
 		});
 	}
@@ -177,6 +179,7 @@ class App {
 	}
 
 	onTouchDown(event) {
+		if (this.isNavOpen) return;
 		if (this.experience && this.experience.onTouchDown) {
 			// if (this.touchClassCheck(event)) return;
 			this.experience.onTouchDown(event);
@@ -184,12 +187,14 @@ class App {
 	}
 
 	onTouchMove(event) {
+		if (this.isNavOpen) return;
 		if (this.experience && this.experience.onTouchMove) {
 			this.experience.onTouchMove(event);
 		}
 	}
 
 	onTouchUp(event) {
+		if (this.isNavOpen) return;
 		if (this.experience && this.experience.onTouchUp) {
 			// if (this.touchClassCheck(event)) return;
 			this.experience.onTouchUp(event);
@@ -197,6 +202,7 @@ class App {
 	}
 
 	onWheel(event) {
+		if (this.isNavOpen) return;
 		if (event.ctrlKey) return; // pinch-to-zoom on trackpad — ignore
 		const normalizedWheel = normalizeWheel(event);
 
@@ -206,12 +212,14 @@ class App {
 	}
 
 	onKeyDown(event) {
+		if (this.isNavOpen) return;
 		if (this.experience && this.experience.onKeyDown) {
 			this.experience.onKeyDown(event);
 		}
 	}
 
 	onKeyUp(event) {
+		if (this.isNavOpen) return;
 		if (this.experience && this.experience.onKeyUp) {
 			this.experience.onKeyUp(event);
 		}
