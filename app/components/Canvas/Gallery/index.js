@@ -554,11 +554,23 @@ export default class Gallery extends Component {
 		this.hide();
 		// Gets bounds, updates meshes positions and scaling
 		if (this.imageBounds) {
+			// Defer one frame so the browser has finished its post-zoom layout before
+			// getBoundingClientRect() is called — otherwise bounds can be read mid-reflow.
+			requestAnimationFrame(() => {
 			this.getBounds().then(() => {
 				this.updateItems(this.imageBounds);
 
 				// Reposition and rescale the main preview mesh to match the new DOM bounds
 				if (this.mainItems[0] && this.wBounds) {
+					// Refresh currentMainBounds from the freshly-read wBounds/hBounds.
+					// setActive stored a reference to the OLD DOMRect; getBounds just
+					// replaced wBounds/hBounds with new objects, so the old reference is
+					// stale and would scale the mesh to pre-resize pixel dimensions.
+					if (this.currentMainItem) {
+						this.currentMainBounds = this.currentMainItem.dataW == 1818
+							? this.wBounds
+							: this.hBounds;
+					}
 					const b = this.currentMainBounds || this.wBounds;
 					this.mainItems[0].mesh.scale.set(b.width, b.height, 1);
 					this.mainItems[0].mesh.position.set(
@@ -575,6 +587,21 @@ export default class Gallery extends Component {
 					this._updateMainOverlays();
 				}
 
+				// Restore active highlight — updateItems() dims every mesh to 0.5,
+				// which clobbers the brightness on the active thumbnail and main mesh.
+				if (this.currentMainItem) {
+					this.currentMainItem.mesh.material.uniforms.uDarken.value = 1;
+					if (this.mainItems[0]) {
+						this.mainItems[0].mesh.material.uniforms.uDarken.value = 1;
+					}
+					if (this.hoveredUuid && this.hoveredUuid !== this.currentMainItem.mesh.uuid) {
+						const hovered = this.items.find(
+							(i) => i.mesh.uuid === this.hoveredUuid
+						);
+						if (hovered) hovered.mesh.material.uniforms.uDarken.value = 1;
+					}
+				}
+
 				if (this.bgBlurItem) this.bgBlurItem.onResize(this.sizes);
 
 				requestIdleCallback(() => {
@@ -589,6 +616,7 @@ export default class Gallery extends Component {
 				this.isPlayed = true;
 				console.log('show WebGL');
 			});
+			}); // requestAnimationFrame
 		}
 	}
 
@@ -882,6 +910,11 @@ export default class Gallery extends Component {
 			this.mainItems[0].mesh.material.uniforms.uTexture.value.needsUpdate = true;
 			const b = item.dataW == 1818 ? this.wBounds : this.hBounds;
 			this.currentMainBounds = b;
+			// Track what's actually displayed on the main mesh. Used in onResize() to re-derive
+			// currentMainBounds against the freshly-read wBounds/hBounds (DOMRect refs go stale
+			// after getBounds() re-runs). Set here, not at setActive's sync tail, so it always
+			// reflects the texture+bounds combination the mesh is currently showing.
+			this.currentMainItem = item;
 			this.mainItems[0].mesh.scale.set(b.width, b.height, 1);
 			this.mainItems[0].mesh.position.set(
 				(b.left + b.right) / 2 - this.sizes.width / 2,
